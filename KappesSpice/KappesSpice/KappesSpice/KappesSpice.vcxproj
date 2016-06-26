@@ -148,9 +148,11 @@
   <ItemGroup>
     <ClCompile Include="Componente.cpp" />
     <ClCompile Include="netlist.cpp" />
+    <ClCompile Include="NetlistReadingProgram.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Componente.h" />
+    <ClInclude Include="Netlist.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

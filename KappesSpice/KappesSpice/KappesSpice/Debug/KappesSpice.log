@@ -1,2 +1,4 @@
-﻿  netlist.cpp
+﻿  NetlistReadingProgram.cpp
+  netlist.cpp
+  Generating Code...
   KappesSpice.vcxproj -> C:\Trabalho-de-CE2\KappesSpice\KappesSpice\Debug\KappesSpice.exe
