@@ -1,0 +1,37 @@
+﻿Build started 15/03/16 16:29:53.
+     1>Project "C:\Users\RaposoUser\documents\visual studio 2015\Projects\CircSim\CircSim\CircSim.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Release\\" /Fd"Release\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Switch.cpp
+         Switch.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\RaposoUser\documents\visual studio 2015\Projects\CircSim\Release\CircSim.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\RaposoUser\documents\visual studio 2015\Projects\CircSim\Release\CircSim.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\RaposoUser\documents\visual studio 2015\Projects\CircSim\Release\CircSim.lib" /MACHINE:X86 /SAFESEH Release\Capacitor.obj
+         Release\CircSim.obj
+         Release\Component.obj
+         Release\CurrentCurrentSource.obj
+         Release\CurrentSource.obj
+         Release\CurrentVoltageSource.obj
+         Release\Diode.obj
+         Release\Inductor.obj
+         Release\LinearNewtonRaphson.obj
+         Release\Netlist.obj
+         Release\NonLinearResistor.obj
+         Release\Opamp.obj
+         Release\Resistor.obj
+         Release\SimulationParameters.obj
+         Release\Solver.obj
+         Release\stdafx.obj
+         Release\Switch.obj
+         Release\VoltageCurrentSource.obj
+         Release\VoltageSource.obj
+         Release\VoltageVoltageSource.obj
+         Generating code
+         1 of 1135 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+           0 functions were new in current compilation
+           0 functions had inline decision re-evaluated but remain unchanged
+         Finished generating code
+         CircSim.vcxproj -> C:\Users\RaposoUser\documents\visual studio 2015\Projects\CircSim\Release\CircSim.exe
+     1>Done Building Project "C:\Users\RaposoUser\documents\visual studio 2015\Projects\CircSim\CircSim\CircSim.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:04.00
