@@ -38,3 +38,12 @@ double Componente::getValue()
 {
 	return Value;
 }
+
+void Resistor::printInfos()
+{
+	cout << "Resistor :" << endl;
+	cout << "Nome:\t" << Name << endl;
+	cout << "Nodes:\t" << nodes[0] << "\t" << nodes[1] << endl;
+	cout << "Valor:\t" << Value << endl;
+	cout << endl;
+}

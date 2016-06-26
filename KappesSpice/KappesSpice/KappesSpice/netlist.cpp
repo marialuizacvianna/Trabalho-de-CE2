@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
 
  const char* netlistPath = "C:\\Trabalho-de-CE2\\simples.net" ;
  vector <string> netlist;
+ vector <Componente *> componentes;
  ifstream netlistFile;
  unsigned index = 0;
 
@@ -42,15 +43,21 @@ int main(int argc, char* argv[])
  switch (linha.at(0)) //Get the first letter of the netlist
  {
    case 'R':
-	   Componente *c = new Componente;
-        cout << netlist[index] << endl;
-        for(int i= 0; i < 4; i++)
-        cout << lineParameters[i] << endl ;
+	    string nome;
+	    Resistor *r = new Resistor;
+		nome = lineParameters[0];
+		nome.erase(nome.begin()); // remove the first letter, the component identifier
+		(r->setName)(nome);
+		(r->addNode)(stoul(lineParameters[1]));
+		(r->addNode)(stoul(lineParameters[2]));
+		(r->setValue)(stod(lineParameters[3]));
+		componentes.push_back(r);
  }
 
  index++;
  }
  netlistFile.close();
+
  system("pause");
 
  return 0;

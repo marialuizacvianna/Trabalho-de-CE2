@@ -20,3 +20,10 @@ protected:
 	unsigned numberOfNodes = 2;
 	double Value;
 };
+
+class Resistor :
+	public Componente 
+	{
+	public:
+		void printInfos();
+};
