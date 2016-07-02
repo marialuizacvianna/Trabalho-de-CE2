@@ -90,16 +90,44 @@ Netlist::Netlist(string netlistPath)
 			break;
 
 		case 'K':
-			string firstIndutor, secondIndutor;
+			string firstIndutor, secondIndutor,nome;
 			Transformador *t = new Transformador;
+			unsigned achou = 0;
+			unsigned count = 0;
+
 			firstIndutor = lineParameters[1];
 			secondIndutor = lineParameters[2];
-			//nome.erase(nome.begin()); // remove the first letter, the component identifier
-			(c->setName)(nome);
-			(c->addNode)(stoul(lineParameters[1]));
-			(c->addNode)(stoul(lineParameters[2]));
+			
+			nome.erase(nome.begin()); // remove the first letter, the component identifier
+			(t->setName)(nome);
+			
+			while (!achou && count != sizeof(componentes))
+			{
+				unsigned achou1, achou2 = 0;
+				if ((componentes[count]->getName) == firstIndutor;
+				{
+					achou1 = 1;
+					(t->addNode)(componentes[count]->getNode(1));
+					(t->addNode)(componentes[count]->getNode(2));
+					(t->setValueFirstIndutor)(componentes[count]->getValue);
+					(t->setValueM)(stod(lineParameters[3]));
+				}
+
+				if ((componentes[count]->getName) == secondtIndutor;
+				{
+					achou2 = 1;
+					(t->addNode)(componentes[count]->getNode(1));
+					(t->addNode)(componentes[count]->getNode(2));
+					(t->setValueFirstIndutor)(componentes[count]->getValue);
+					(t->setValueM)(stod(lineParameters[3]));
+				}
+
+				count = count + 1;
+			}
+			
+			
+
 			(c->setValue)(stod(lineParameters[3]));
-			(c->setInitialValue)(stod(lineParameters[4]));
 			componentes.push_back(i);
 			break;
 

@@ -40,7 +40,6 @@ class Capacitor : public Componente
 	double initialValue;
 };
 
-<<<<<<< HEAD
 class Transformador : public Componente
 {
 private:
@@ -48,7 +47,6 @@ private:
 };
 
 
-=======
 class Indutor :
 	public Componente
 	{
@@ -58,4 +56,3 @@ class Indutor :
 	private:
 		double initialValue;
 	};
->>>>>>> refs/remotes/origin/master
