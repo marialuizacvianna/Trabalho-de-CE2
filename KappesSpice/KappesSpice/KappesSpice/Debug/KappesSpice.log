@@ -1,2 +1,2 @@
 ﻿  NetlistReadingProgram.cpp
-  KappesSpice.vcxproj -> C:\Trabalho-de-CE2\KappesSpice\KappesSpice\Debug\KappesSpice.exe
+c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\netlistreadingprogram.cpp(8): fatal error C1083: Cannot open include file: 'Eigen': No such file or directory

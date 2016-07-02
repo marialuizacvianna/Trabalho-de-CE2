@@ -5,6 +5,7 @@
 #include <iterator>
 #include <sstream>
 #include <vector>
+#include <Eigen>
 #include "Componente.h"
 #include "Netlist.h"
 

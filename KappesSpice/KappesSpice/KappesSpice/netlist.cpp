@@ -51,6 +51,47 @@ Netlist::Netlist(string netlistPath)
 			componentes.push_back(r);
 			break;
 
+<<<<<<< HEAD
+		case 'I': // fonte de corrente independente
+			string nome;
+			CurrentSource *i = new CurrentSource;
+			nome = lineParameters[0];
+			nome.erase(nome.begin()); // remove the first letter, the component identifier
+			(i->setName)(nome);
+			(i->addNode)(stoul(lineParameters[1]));
+			(i->addNode)(stoul(lineParameters[2]));
+			(i->setValue)(stod(lineParameters[3]));
+			componentes.push_back(i);
+			break;
+
+		case 'C': 
+			string nome;
+			Capacitor *c = new Capacitor;
+			nome = lineParameters[0];
+			nome.erase(nome.begin()); // remove the first letter, the component identifier
+			(c->setName)(nome);
+			(c->addNode)(stoul(lineParameters[1]));
+			(c->addNode)(stoul(lineParameters[2]));
+			(c->setValue)(stod(lineParameters[3]));
+			(c->setInitialValue)(stod(lineParameters[4]));
+			componentes.push_back(i);
+			break;
+
+		case 'K':
+			string fistIndutor, secondIndutor;
+			Tranformador *t = new Transformador;
+			firstIndutor = lineParameters[1];
+			secondIndutor = lineParameters[2];
+			nome.erase(nome.begin()); // remove the first letter, the component identifier
+			(c->setName)(nome);
+			(c->addNode)(stoul(lineParameters[1]));
+			(c->addNode)(stoul(lineParameters[2]));
+			(c->setValue)(stod(lineParameters[3]));
+			(c->setInitialValue)(stod(lineParameters[4]));
+			componentes.push_back(i);
+			break;
+        
+=======
 			case 'L':
 			string nome;
 			Indutor *l = new Indutor;
@@ -64,6 +105,7 @@ Netlist::Netlist(string netlistPath)
 			componentes.push_back(l);
 			break;
 
+>>>>>>> refs/remotes/origin/master
 		}
 
 

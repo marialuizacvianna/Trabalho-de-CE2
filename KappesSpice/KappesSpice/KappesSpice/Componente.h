@@ -17,17 +17,38 @@ public:
 protected:
 	string Name;
 	vector<unsigned> nodes;
-	unsigned numberOfNodes = 2;
+	unsigned numberOfNodes;
 	double Value;
 };
 
-class Resistor :
-	public Componente 
-	{
+class Resistor : public Componente 
+{
 	public:
-		void printInfos();
+    	void printInfos();
 };
 
+class CurrentSource: public Componente
+{
+};
+
+class Capacitor : public Componente
+{ 
+   public:
+	void setInitialValue(double);
+	double getInitialValue();
+   private:
+	double initialValue;
+};
+
+<<<<<<< HEAD
+class Transformador : public Componente
+{
+private:
+	double mIndutance; //indutancia que ele aplica no segundo indutor
+};
+
+
+=======
 class Indutor :
 	public Componente
 	{
@@ -37,3 +58,4 @@ class Indutor :
 	private:
 		double initialValue;
 	};
+>>>>>>> refs/remotes/origin/master

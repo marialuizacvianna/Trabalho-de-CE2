@@ -1,0 +1,2 @@
+﻿  MatrixTest.cpp
+c:\trabalho-de-ce2\matrix\matrix\matrixtest.cpp(8): fatal error C1083: Cannot open include file: '..\Matrix\Eigen': No such file or directory
