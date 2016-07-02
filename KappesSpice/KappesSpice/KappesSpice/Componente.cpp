@@ -48,25 +48,57 @@ void Resistor::printInfos()
 	cout << endl;
 }
 
-<<<<<<< HEAD
+
 void Capacitor::setInitialValue(double valorInicial)
-=======
-void Indutor::setInitialValue(double valorInicial)
->>>>>>> refs/remotes/origin/master
 {
 	initialValue = valorInicial;
 }
 
-<<<<<<< HEAD
+void Indutor::setInitialValue(double valorInicial)
+{
+	initialValue = valorInicial;
+}
+
+
 double Capacitor::getInitialValue()
 {
 	return initialValue;
 }
 
 
-=======
 double Indutor::getInitialValue()
 {
 	return initialValue;
 }
->>>>>>> refs/remotes/origin/master
+
+
+void Transformador::setValueFirstIndutor(double valorPrimeiro)
+{
+	firstIndutorValue = valorPrimeiro;
+}
+
+double Transformador::getValueFirstIndutor()
+{
+	return firstIndutorValue;
+}
+
+void Transformador::setValueSecondIndutor(double valorSegundo)
+{
+	secondIndutorValue = valorSegundo;
+}
+
+double Transformador::getValueSecondIndutor()
+{
+	return secondIndutorValue;
+}
+
+void Transformador::setValueM(double indutanciaMutua)
+{
+	mIndutance = indutanciaMutua;
+
+}
+
+double Transformador:: getValueM()
+{
+	return mIndutance;
+}
