@@ -47,3 +47,15 @@ void Resistor::printInfos()
 	cout << "Valor:\t" << Value << endl;
 	cout << endl;
 }
+
+void Capacitor::setInitialValue(double valorInicial)
+{
+	initialValue = valorInicial;
+}
+
+double Capacitor::getInitialValue()
+{
+	return initialValue;
+}
+
+
