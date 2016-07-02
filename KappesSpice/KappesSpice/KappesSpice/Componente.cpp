@@ -47,3 +47,13 @@ void Resistor::printInfos()
 	cout << "Valor:\t" << Value << endl;
 	cout << endl;
 }
+
+void Indutor::setInitialValue(double valorInicial)
+{
+	initialValue = valorInicial;
+}
+
+double Indutor::getInitialValue()
+{
+	return initialValue;
+}

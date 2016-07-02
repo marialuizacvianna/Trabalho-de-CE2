@@ -27,3 +27,13 @@ class Resistor :
 	public:
 		void printInfos();
 };
+
+class Indutor :
+	public Componente
+	{
+	public:
+		void setInitialValue(double);
+		double getInitialValue();
+	private:
+		double initialValue;
+	};

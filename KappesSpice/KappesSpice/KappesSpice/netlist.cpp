@@ -49,7 +49,24 @@ Netlist::Netlist(string netlistPath)
 			(r->addNode)(stoul(lineParameters[2]));
 			(r->setValue)(stod(lineParameters[3]));
 			componentes.push_back(r);
+			break;
+
+			case 'L':
+			string nome;
+			Indutor *l = new Indutor;
+			nome = lineParameters[0];
+			nome.erase(nome.begin()); // remove the first letter, the component identifier
+			(l->setName)(nome);
+			(l->addNode)(stoul(lineParameters[1]));
+			(l->addNode)(stoul(lineParameters[2]));
+			(l->setValue)(stod(lineParameters[3]));
+			(l->setInitialValue)(lineParameters[4]);
+			componentes.push_back(l);
+			break;
+
 		}
+
+
 
 		index++;
 	}
