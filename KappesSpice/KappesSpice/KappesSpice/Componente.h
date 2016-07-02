@@ -29,7 +29,27 @@ class Resistor : public Componente
 
 class CurrentSource: public Componente
 {
+	private:
+	double phase;
+	double dcValue;
+public:
+	void setPhase(double);
+	double getPhase();
+	void setDCValue(double);
+	double getDCValue();
 };
+
+class VoltageSource: public Componente
+{
+private:
+	double phase;
+	double dcValue;
+public:
+	void setPhase(double);
+	double getPhase();
+	void setDCValue(double);
+	double getDCValue();	
+}
 
 class Capacitor : public Componente
 { 

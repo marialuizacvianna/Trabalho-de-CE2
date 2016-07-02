@@ -60,8 +60,26 @@ Netlist::Netlist(string netlistPath)
 			(i->addNode)(stoul(lineParameters[1]));
 			(i->addNode)(stoul(lineParameters[2]));
 			(i->setValue)(stod(lineParameters[3]));
+			(i->setPhase)(stod(lineParameters[4]));
+			(i->setDCValue)(stod(lineParameters[5]));
 			componentes.push_back(i);
 			break;
+		
+		case 'V': // fonte de corrente independente
+			string nome;
+			VoltageSource *v = new VoltageSource;
+			nome = lineParameters[0];
+			nome.erase(nome.begin()); // remove the first letter, the component identifier
+			(v->setName)(nome);
+			(v->addNode)(stoul(lineParameters[1]));
+			(v->addNode)(stoul(lineParameters[2]));
+			(v->setValue)(stod(lineParameters[3]));
+			(v->setPhase)(stod(lineParameters[4]));
+			(v->setDCValue)(stod(lineParameters[5]));			
+			componentes.push_back(v);
+			break;
+			
+		
 
 		case 'C': 
 			string nome;
