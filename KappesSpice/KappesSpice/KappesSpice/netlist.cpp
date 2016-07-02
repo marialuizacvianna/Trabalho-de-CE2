@@ -51,7 +51,6 @@ Netlist::Netlist(string netlistPath)
 			componentes.push_back(r);
 			break;
 
-<<<<<<< HEAD
 		case 'I': // fonte de corrente independente
 			string nome;
 			CurrentSource *i = new CurrentSource;
@@ -77,22 +76,7 @@ Netlist::Netlist(string netlistPath)
 			componentes.push_back(i);
 			break;
 
-		case 'K':
-			string fistIndutor, secondIndutor;
-			Tranformador *t = new Transformador;
-			firstIndutor = lineParameters[1];
-			secondIndutor = lineParameters[2];
-			nome.erase(nome.begin()); // remove the first letter, the component identifier
-			(c->setName)(nome);
-			(c->addNode)(stoul(lineParameters[1]));
-			(c->addNode)(stoul(lineParameters[2]));
-			(c->setValue)(stod(lineParameters[3]));
-			(c->setInitialValue)(stod(lineParameters[4]));
-			componentes.push_back(i);
-			break;
-        
-=======
-			case 'L':
+  		case 'L':
 			string nome;
 			Indutor *l = new Indutor;
 			nome = lineParameters[0];
@@ -105,7 +89,20 @@ Netlist::Netlist(string netlistPath)
 			componentes.push_back(l);
 			break;
 
->>>>>>> refs/remotes/origin/master
+		case 'K':
+			string firstIndutor, secondIndutor;
+			Transformador *t = new Transformador;
+			firstIndutor = lineParameters[1];
+			secondIndutor = lineParameters[2];
+			//nome.erase(nome.begin()); // remove the first letter, the component identifier
+			(c->setName)(nome);
+			(c->addNode)(stoul(lineParameters[1]));
+			(c->addNode)(stoul(lineParameters[2]));
+			(c->setValue)(stod(lineParameters[3]));
+			(c->setInitialValue)(stod(lineParameters[4]));
+			componentes.push_back(i);
+			break;
+
 		}
 
 
