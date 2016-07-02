@@ -51,6 +51,7 @@ Netlist::Netlist(string netlistPath)
 			componentes.push_back(r);
 			break;
 
+<<<<<<< HEAD
 		case 'I': // fonte de corrente independente
 			string nome;
 			CurrentSource *i = new CurrentSource;
@@ -90,7 +91,24 @@ Netlist::Netlist(string netlistPath)
 			componentes.push_back(i);
 			break;
         
+=======
+			case 'L':
+			string nome;
+			Indutor *l = new Indutor;
+			nome = lineParameters[0];
+			nome.erase(nome.begin()); // remove the first letter, the component identifier
+			(l->setName)(nome);
+			(l->addNode)(stoul(lineParameters[1]));
+			(l->addNode)(stoul(lineParameters[2]));
+			(l->setValue)(stod(lineParameters[3]));
+			(l->setInitialValue)(lineParameters[4]);
+			componentes.push_back(l);
+			break;
+
+>>>>>>> refs/remotes/origin/master
 		}
+
+
 
 		index++;
 	}

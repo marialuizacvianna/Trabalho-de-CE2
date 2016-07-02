@@ -48,14 +48,25 @@ void Resistor::printInfos()
 	cout << endl;
 }
 
+<<<<<<< HEAD
 void Capacitor::setInitialValue(double valorInicial)
+=======
+void Indutor::setInitialValue(double valorInicial)
+>>>>>>> refs/remotes/origin/master
 {
 	initialValue = valorInicial;
 }
 
+<<<<<<< HEAD
 double Capacitor::getInitialValue()
 {
 	return initialValue;
 }
 
 
+=======
+double Indutor::getInitialValue()
+{
+	return initialValue;
+}
+>>>>>>> refs/remotes/origin/master
