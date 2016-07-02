@@ -48,28 +48,26 @@ void Resistor::printInfos()
 	cout << endl;
 }
 
-<<<<<<< HEAD
+
 void Capacitor::setInitialValue(double valorInicial)
-=======
-void Indutor::setInitialValue(double valorInicial)
->>>>>>> refs/remotes/origin/master
 {
 	initialValue = valorInicial;
 }
 
-<<<<<<< HEAD
+void Indutor::setInitialValue(double valorInicial)
+{
+	initialValue = valorInicial;
+}
+
 double Capacitor::getInitialValue()
 {
 	return initialValue;
 }
 
-=======
 double Indutor::getInitialValue()
 {
 	return initialValue;
 }
->>>>>>> refs/remotes/origin/master
-
 
 	void CurrentSource::setPhase(double fase){
 		phase = fase;
@@ -102,4 +100,3 @@ double Indutor::getInitialValue()
 	double VoltageSource::getDCValue(){
 		return dcValue;
 	}
-}

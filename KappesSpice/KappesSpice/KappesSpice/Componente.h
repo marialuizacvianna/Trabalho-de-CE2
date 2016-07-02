@@ -49,7 +49,7 @@ public:
 	double getPhase();
 	void setDCValue(double);
 	double getDCValue();	
-}
+};
 
 class Capacitor : public Componente
 { 
