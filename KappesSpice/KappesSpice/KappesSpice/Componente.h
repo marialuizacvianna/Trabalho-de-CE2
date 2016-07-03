@@ -14,10 +14,14 @@ public:
 	unsigned getNode(unsigned);
 	void setValue(double);
 	double getValue();
+	void addType(char);
+	char getType();
+	unsigned getNumberOfNodes(void);
 protected:
-	string Name;
+	char Type;
 	vector<unsigned> nodes;
-	unsigned numberOfNodes;
+	unsigned numberOfNodes = 0;
+	string Name;
 	double Value;
 };
 
@@ -29,14 +33,14 @@ class Resistor : public Componente
 
 class CurrentSource: public Componente
 {
-	private:
-	double phase;
-	double dcValue;
-public:
-	void setPhase(double);
-	double getPhase();
-	void setDCValue(double);
-	double getDCValue();
+   private:
+	  double phase;
+	  double dcValue;
+    public:
+      void setPhase(double);
+ 	  double getPhase();
+	  void setDCValue(double);
+	  double getDCValue();
 };
 
 class VoltageSource: public Componente

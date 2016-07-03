@@ -36,3 +36,32 @@ void LinearSystem::PrintG_Matrix()
 
 	cout << endl;
 }
+
+void LinearSystem::setRowsValue(vector <Componente *> componentes)
+{
+	vector<unsigned> nosNaoRepetidos;
+	unsigned count = 0;
+
+	while (count != sizeof(componentes) - 1)
+	{
+		for (unsigned i = 0; i < componentes[count]->getNumberOfNodes; i++)
+		{
+			unsigned repetido = 0;
+			if (count != 0)
+			{
+				for (unsigned x = 0; x < sizeof(nosNaoRepetidos); x++)
+				{
+					if (componentes[count]->getNode[i] == nosNaoRepetidos[x])
+						repetido = 1;
+				}
+			}
+
+			if (repetido == 0)
+				nosNaoRepetidos.push_back(componentes[count]->getNode[i]);
+		}
+
+		count += 1;
+	}
+
+	rows = sizeof(nosNaoRepetidos);
+}

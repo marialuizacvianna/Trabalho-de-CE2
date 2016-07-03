@@ -5,6 +5,7 @@
 #include <iterator>
 #include <sstream>
 #include <vector>
+#include "LinearSystem.h"
 #include "Componente.h"
 #include "Netlist.h"
 
@@ -15,7 +16,7 @@ Netlist::Netlist(string netlistPath)
 	string linha;
 	ifstream netlistFile;
 	unsigned index = 0;
-
+	
 	netlistFile.open(netlistPath);
 	if (!netlistFile)
 	{
@@ -43,6 +44,7 @@ Netlist::Netlist(string netlistPath)
 			string nome;
 			Resistor *r = new Resistor;
 			nome = lineParameters[0];
+			(r->addType)(nome.begin);
 			nome.erase(nome.begin()); // remove the first letter, the component identifier
 			(r->setName)(nome);
 			(r->addNode)(stoul(lineParameters[1]));
@@ -55,6 +57,7 @@ Netlist::Netlist(string netlistPath)
 			string nome;
 			CurrentSource *i = new CurrentSource;
 			nome = lineParameters[0];
+			(i->addType)(nome.begin);
 			nome.erase(nome.begin()); // remove the first letter, the component identifier
 			(i->setName)(nome);
 			(i->addNode)(stoul(lineParameters[1]));
@@ -69,6 +72,7 @@ Netlist::Netlist(string netlistPath)
 			string nome;
 			VoltageSource *v = new VoltageSource;
 			nome = lineParameters[0];
+			(v->addType)(nome.begin);
 			nome.erase(nome.begin()); // remove the first letter, the component identifier
 			(v->setName)(nome);
 			(v->addNode)(stoul(lineParameters[1]));
@@ -83,6 +87,7 @@ Netlist::Netlist(string netlistPath)
             string nome;
             VoltageSrcCntrlVoltage *e = new VoltageSrcCntrlVoltage;
             nome = lineParameters[0];
+			(e->addType)(nome.begin);
             nome.erase(nome.begin()); // remove the first letter, the component identifier
             (e->setName)(nome);
             (e->addNode)(stoul(lineParameters[1]));
@@ -96,6 +101,7 @@ Netlist::Netlist(string netlistPath)
             string nome;
             CurrentSrcCntrlCurrent *f = new CurrentSrcCntrlCurrent;
             nome = lineParameters[0];
+			(f->addType)(nome.begin);
             nome.erase(nome.begin()); // remove the first letter, the component identifier
             (f->setName)(nome);
             (f->addNode)(stoul(lineParameters[1]));
@@ -109,6 +115,7 @@ Netlist::Netlist(string netlistPath)
             string nome;
             CurrentSrcCntrlVoltage *g = new CurrentSrcCntrlVoltage;
             nome = lineParameters[0];
+			(g->addType)(nome.begin);
             nome.erase(nome.begin()); // remove the first letter, the component identifier
             (g->setName)(nome);
             (g->addNode)(stoul(lineParameters[1]));
@@ -123,6 +130,7 @@ Netlist::Netlist(string netlistPath)
             string nome;
             VoltageSrcCntrlCurrent *h = new VoltageSrcCntrlCurrent;
             nome = lineParameters[0];
+			(h->addType)(nome.begin);
             nome.erase(nome.begin()); // remove the first letter, the component identifier
             (h->setName)(nome);
             (h->addNode)(stoul(lineParameters[1]));
@@ -137,6 +145,7 @@ Netlist::Netlist(string netlistPath)
 			string nome;
 			Capacitor *c = new Capacitor;
 			nome = lineParameters[0];
+			(c->addType)(nome.begin);
 			nome.erase(nome.begin()); // remove the first letter, the component identifier
 			(c->setName)(nome);
 			(c->addNode)(stoul(lineParameters[1]));
@@ -150,6 +159,7 @@ Netlist::Netlist(string netlistPath)
 			string nome;
 			Indutor *l = new Indutor;
 			nome = lineParameters[0];
+			(l->addType)(nome.begin());
 			nome.erase(nome.begin()); // remove the first letter, the component identifier
 			(l->setName)(nome);
 			(l->addNode)(stoul(lineParameters[1]));
@@ -162,6 +172,7 @@ Netlist::Netlist(string netlistPath)
 		case 'K':
 			string firstIndutor, secondIndutor,nome;
 			Transformador *t = new Transformador;
+			(t->addType)(nome.begin());
 			unsigned achouAmbos = 0;
 			unsigned count,countAuxiliar = 0;
 			vector<Componente*> auxiliar;
@@ -186,13 +197,11 @@ Netlist::Netlist(string netlistPath)
 					firstIndutorPosition = count;
 				}
 
-				if ((componentes[count]->getName) == secondtIndutor)
+				if ((componentes[count]->getName) == secondIndutor)
 				{
 					achou2 = 1;
 					(t->addNode)(componentes[count]->getNode(1));
 					(t->addNode)(componentes[count]->getNode(2));
-					/*(t->setValueFirstIndutor)(componentes[count]->getValue);
-					(t->setValueM)(stod(lineParameters[3]));*/
 					(t->setValueSecondIndutor)(componentes[count]->getValue);
 					secondIndutorPosition = count;
 				}
@@ -204,7 +213,7 @@ Netlist::Netlist(string netlistPath)
 
 			count = 0;
 			countAuxiliar = 0;
-			while (count != sizeof(componentes))
+			while (count != (sizeof(componentes)-1))
 			{
 				if (count != firstIndutorPosition && count != secondIndutorPosition)
 				{
@@ -224,6 +233,7 @@ Netlist::Netlist(string netlistPath)
 				string nome;
 				AmpOp *o = new AmpOp;
 				nome = lineParameters[0];
+				(o->addType)(nome.begin());
 				nome.erase(nome.begin()); // remove the first letter, the component identifier
 				(o->setName)(nome);
 				(o->addNode)(stoul(lineParameters[1]));
@@ -234,11 +244,47 @@ Netlist::Netlist(string netlistPath)
 				break;
 
 		}
-
-		index++;
+     	index++;
 	}
+
 	netlistFile.close();
+}
+
+
+void Netlist::DoConductanceMatrix()
+{
+	setRowsValue(componentes);
+	InitializeG_Matrix();
+	unsigned count = 0;
+	double value;
+
+	while (count != sizeof(componentes) - 1)
+	{
+		if (componentes[count]->getType == 'R')
+		{
+			value = 1/(componentes[count]->getValue);
+			G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
+			G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
+			G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
+			G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
+		}
+
+		else if (componentes[count]->getType == 'G')
+		{
+			value = componentes[count]->getValue;
+			G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] += value;
+			G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(3)] += value;
+			G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(3)] -= value;
+			G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(2)] -= value;
+		
+		}
+
+    
+		count += 1;
+	}
+	
 
 }
+
 
 

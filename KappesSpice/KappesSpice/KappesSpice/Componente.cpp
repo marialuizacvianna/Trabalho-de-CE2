@@ -22,6 +22,7 @@ string Componente::getName()
 void Componente::addNode(unsigned node)
 {
 	nodes.push_back(node);
+	numberOfNodes += 1;
 }
 
 unsigned Componente::getNode(unsigned i)
@@ -117,7 +118,7 @@ double Transformador:: getValueM()
 		return dcValue;
 	}
 
-	void VoltageSource::setPhase(double){
+	void VoltageSource::setPhase(double fase){
 				phase = fase;
 	}
 	
@@ -125,7 +126,7 @@ double Transformador:: getValueM()
 		return phase;
 	}
 	
-	void VoltageSource::setDCValue(double){
+	void VoltageSource::setDCValue(double valorDC){
 		dcValue = valorDC;
 	}
 	
@@ -135,7 +136,17 @@ double Transformador:: getValueM()
 	}
 
 
+	void Componente::addType(char letra)
+	{
+		Type = letra;
+    }
 
+	char Componente::getType()
+	{
+		return Type;
+	}
 
-
-
+	unsigned Componente::getNumberOfNodes()
+	{
+		return numberOfNodes;
+	}

@@ -7,15 +7,17 @@
 #include <sstream>
 #include <vector>
 #include "Componente.h"
+#include "LinearSystem.h"
 
 using namespace std;
 
-class Netlist
+class Netlist : 
+public LinearSystem
 {
 public:
 	Netlist(string netlistPath);
+	void DoConductanceMatrix(void);
 private:
 	vector <string> netlist;
 	vector <Componente *> componentes;
-
 };
