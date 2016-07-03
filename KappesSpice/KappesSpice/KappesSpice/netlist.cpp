@@ -137,18 +137,14 @@ Netlist::Netlist(string netlistPath)
 					achou2 = 1;
 					(t->addNode)(componentes[count]->getNode(1));
 					(t->addNode)(componentes[count]->getNode(2));
+					/*(t->setValueFirstIndutor)(componentes[count]->getValue);
+					(t->setValueM)(stod(lineParameters[3]));*/
 					(t->setValueSecondIndutor)(componentes[count]->getValue);
 					secondIndutorPosition = count;
 				}
-/*
-<<<<<<< HEAD
-*/
-
 				if (achou1 == 1 && achou2 == 1)
 					achouAmbos = 1;
 
-/*=======
->>>>>>> origin/master*/
 				count = count + 1;
 			}
 			
@@ -183,8 +179,6 @@ Netlist::Netlist(string netlistPath)
 				(o->addNode)(stoul(lineParameters[4]));
 				componentes.push_back(o);
 				break;
-
-
 
 
 		}
