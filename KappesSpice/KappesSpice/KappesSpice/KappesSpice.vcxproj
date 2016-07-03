@@ -148,11 +148,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Componente.cpp" />
+    <ClCompile Include="LinearSystem.cpp" />
     <ClCompile Include="netlist.cpp" />
     <ClCompile Include="NetlistReadingProgram.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Componente.h" />
+    <ClInclude Include="LinearSystem.h" />
     <ClInclude Include="Netlist.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
