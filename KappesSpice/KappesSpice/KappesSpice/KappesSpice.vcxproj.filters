@@ -24,12 +24,18 @@
     <ClCompile Include="NetlistReadingProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LinearSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Componente.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Netlist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LinearSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

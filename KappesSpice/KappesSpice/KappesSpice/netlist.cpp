@@ -89,7 +89,7 @@ Netlist::Netlist(string netlistPath)
 			(c->addNode)(stoul(lineParameters[2]));
 			(c->setValue)(stod(lineParameters[3]));
 			(c->setInitialValue)(stod(lineParameters[4]));
-			componentes.push_back(i);
+			componentes.push_back(c);
 			break;
 
   		case 'L':
@@ -108,16 +108,18 @@ Netlist::Netlist(string netlistPath)
 		case 'K':
 			string firstIndutor, secondIndutor,nome;
 			Transformador *t = new Transformador;
-			unsigned achou = 0;
-			unsigned count = 0;
+			unsigned achouAmbos = 0;
+			unsigned count,countAuxiliar = 0;
+			vector<Componente*> auxiliar;
+			unsigned firstIndutorPosition, secondIndutorPosition;
 
-			firstIndutor = lineParameters[1];
-			secondIndutor = lineParameters[2];
+			firstIndutor = stoul(lineParameters[1]);
+			secondIndutor = stoul(lineParameters[2]);
 			
 			nome.erase(nome.begin()); // remove the first letter, the component identifier
 			(t->setName)(nome);
 			
-			while (!achou && count != sizeof(componentes))
+			while (!achouAmbos && count != sizeof(componentes))
 			{
 				unsigned achou1, achou2 = 0;
 				if ((componentes[count]->getName) == firstIndutor)
@@ -127,29 +129,51 @@ Netlist::Netlist(string netlistPath)
 					(t->addNode)(componentes[count]->getNode(2));
 					(t->setValueFirstIndutor)(componentes[count]->getValue);
 					(t->setValueM)(stod(lineParameters[3]));
+					firstIndutorPosition = count;
 				}
 
-				if ((componentes[count]->getName) == secondtIndutor);
+				if ((componentes[count]->getName) == secondtIndutor)
 				{
 					achou2 = 1;
 					(t->addNode)(componentes[count]->getNode(1));
 					(t->addNode)(componentes[count]->getNode(2));
-					(t->setValueFirstIndutor)(componentes[count]->getValue);
-					(t->setValueM)(stod(lineParameters[3]));
+					(t->setValueSecondIndutor)(componentes[count]->getValue);
+					secondIndutorPosition = count;
 				}
+/*
+<<<<<<< HEAD
+*/
+
+				if (achou1 == 1 && achou2 == 1)
+					achouAmbos = 1;
+
+/*=======
+>>>>>>> origin/master*/
 				count = count + 1;
 			}
 			
-			
+			count = 0;
+			countAuxiliar = 0;
+			while (count != sizeof(componentes))
+			{
+				if (count != firstIndutorPosition && count != secondIndutorPosition)
+				{
+					auxiliar[countAuxiliar] = componentes[count];
+					countAuxiliar = countAuxiliar + 1;
+				}
 
-			(c->setValue)(stod(lineParameters[3]));
-			componentes.push_back(i);
+				count = count + 1;
+			}
+
+			componentes = auxiliar;
+
+			componentes.push_back(t);
 			break;
 
 
 			case 'O':
 				string nome;
-				AmpOp *o = new Indutor;
+				AmpOp *o = new AmpOp;
 				nome = lineParameters[0];
 				nome.erase(nome.begin()); // remove the first letter, the component identifier
 				(o->setName)(nome);
@@ -160,18 +184,7 @@ Netlist::Netlist(string netlistPath)
 				componentes.push_back(o);
 				break;
 
-			case 'O':
-				string nome;
-				AmpOp *o = new Indutor;
-				nome = lineParameters[0];
-				nome.erase(nome.begin()); // remove the first letter, the component identifier
-				(o->setName)(nome);
-				(o->addNode)(stoul(lineParameters[1]));
-				(o->addNode)(stoul(lineParameters[2]));
-				(o->addNode)(stoul(lineParameters[3]));
-				(o->addNode)(stoul(lineParameters[4]));
-				componentes.push_back(o);
-				break;
+
 
 
 		}
