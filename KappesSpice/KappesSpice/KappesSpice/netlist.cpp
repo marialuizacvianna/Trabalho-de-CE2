@@ -64,7 +64,7 @@ Netlist::Netlist(string netlistPath)
 			(i->setDCValue)(stod(lineParameters[5]));
 			componentes.push_back(i);
 			break;
-		
+
 		case 'V': // fonte de corrente independente
 			string nome;
 			VoltageSource *v = new VoltageSource;
@@ -75,11 +75,65 @@ Netlist::Netlist(string netlistPath)
 			(v->addNode)(stoul(lineParameters[2]));
 			(v->setValue)(stod(lineParameters[3]));
 			(v->setPhase)(stod(lineParameters[4]));
-			(v->setDCValue)(stod(lineParameters[5]));			
+			(v->setDCValue)(stod(lineParameters[5]));
 			componentes.push_back(v);
 			break;
 
-		case 'C': 
+        case 'E':
+            string nome;
+            VoltageSrcCntrlVoltage *e = new VoltageSrcCntrlVoltage;
+            nome = lineParameters[0];
+            nome.erase(nome.begin()); // remove the first letter, the component identifier
+            (e->setName)(nome);
+            (e->addNode)(stoul(lineParameters[1]));
+            (e->addNode)(stoul(lineParameters[2]));
+            (e->addNode)(stoul(lineParameters[3]));
+            (e->addNode)(stoul(lineParameters[4]));
+            (e->setValue)(stod(lineParameters[5]));
+            componentes.push_back(e);
+
+        case 'F':
+            string nome;
+            CurrentSrcCntrlCurrent *f = new CurrentSrcCntrlCurrent;
+            nome = lineParameters[0];
+            nome.erase(nome.begin()); // remove the first letter, the component identifier
+            (f->setName)(nome);
+            (f->addNode)(stoul(lineParameters[1]));
+            (f->addNode)(stoul(lineParameters[2]));
+            (f->addNode)(stoul(lineParameters[3]));
+            (f->addNode)(stoul(lineParameters[4]));
+            (f->setValue)(stod(lineParameters[5]));
+            componentes.push_back(f);
+            break;
+        case 'G':
+            string nome;
+            CurrentSrcCntrlVoltage *g = new CurrentSrcCntrlVoltage;
+            nome = lineParameters[0];
+            nome.erase(nome.begin()); // remove the first letter, the component identifier
+            (g->setName)(nome);
+            (g->addNode)(stoul(lineParameters[1]));
+            (g->addNode)(stoul(lineParameters[2]));
+            (g->addNode)(stoul(lineParameters[3]));
+            (g->addNode)(stoul(lineParameters[4]));
+            (g->setValue)(stod(lineParameters[5]));
+            componentes.push_back(g);
+            break;
+
+        case 'H':
+            string nome;
+            VoltageSrcCntrlCurrent *h = new VoltageSrcCntrlCurrent;
+            nome = lineParameters[0];
+            nome.erase(nome.begin()); // remove the first letter, the component identifier
+            (h->setName)(nome);
+            (h->addNode)(stoul(lineParameters[1]));
+            (h->addNode)(stoul(lineParameters[2]));
+            (h->addNode)(stoul(lineParameters[3]));
+            (h->addNode)(stoul(lineParameters[4]));
+            (h->setValue)(stod(lineParameters[5]));
+            componentes.push_back(h);
+            break;
+
+		case 'C':
 			string nome;
 			Capacitor *c = new Capacitor;
 			nome = lineParameters[0];
@@ -115,10 +169,10 @@ Netlist::Netlist(string netlistPath)
 
 			firstIndutor = stoul(lineParameters[1]);
 			secondIndutor = stoul(lineParameters[2]);
-			
+
 			nome.erase(nome.begin()); // remove the first letter, the component identifier
 			(t->setName)(nome);
-			
+
 			while (!achouAmbos && count != sizeof(componentes))
 			{
 				unsigned achou1, achou2 = 0;
@@ -147,7 +201,7 @@ Netlist::Netlist(string netlistPath)
 
 				count = count + 1;
 			}
-			
+
 			count = 0;
 			countAuxiliar = 0;
 			while (count != sizeof(componentes))
@@ -166,7 +220,6 @@ Netlist::Netlist(string netlistPath)
 			componentes.push_back(t);
 			break;
 
-
 			case 'O':
 				string nome;
 				AmpOp *o = new AmpOp;
@@ -180,9 +233,7 @@ Netlist::Netlist(string netlistPath)
 				componentes.push_back(o);
 				break;
 
-
 		}
-
 
 		index++;
 	}

@@ -92,3 +92,26 @@ class AmpOp :
 public:
 private:
 };
+
+//parametro value e métodos getValue e setValue já definidos na classe Componente
+class VoltageSrcCntrlVoltage : public Componente {
+};
+
+class CurrentSrcCntrlCurrent: public Componente {
+};
+
+class CurrentSrcCntrlVoltage: public Componente {
+};
+
+class VoltageSrcCntrlCurrent: public Componente {
+};
+
+class Mosfet: public Componente {
+private:
+	double gamma, //bulk threshold parameter
+			phi, //surface potential
+			lambda, //channel length modulation
+			comprimento, largura,
+			k; //transcondutance parameter
+
+};
