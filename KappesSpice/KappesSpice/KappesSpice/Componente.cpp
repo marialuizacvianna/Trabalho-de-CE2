@@ -65,11 +65,16 @@ double Capacitor::getInitialValue()
 	return initialValue;
 }
 
+<<<<<<< HEAD
 
+=======
+=======
+>>>>>>> origin/master
 double Indutor::getInitialValue()
 {
 	return initialValue;
 }
+<<<<<<< HEAD
 
 
 void Transformador::setValueFirstIndutor(double valorPrimeiro)
@@ -102,3 +107,40 @@ double Transformador:: getValueM()
 {
 	return mIndutance;
 }
+=======
+>>>>>>> refs/remotes/origin/master
+
+
+	void CurrentSource::setPhase(double fase){
+		phase = fase;
+	}
+	
+	double CurrentSource::getPhase(){
+		return phase;
+	}
+	
+	void CurrentSource::setDCValue(double valorDC){
+		dcValue = valorDC;
+	}
+	
+	double CurrentSource::getDCValue(){
+		return dcValue;
+	}
+
+	void VoltageSource::setPhase(double){
+				phase = fase;
+	}
+	
+	double VoltageSource::getPhase(){
+		return phase;
+	}
+	
+	void VoltageSource::setDCValue(double){
+		dcValue = valorDC;
+	}
+	
+	double VoltageSource::getDCValue(){
+		return dcValue;
+	}
+}
+>>>>>>> origin/master
