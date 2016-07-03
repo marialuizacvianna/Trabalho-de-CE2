@@ -79,8 +79,6 @@ Netlist::Netlist(string netlistPath)
 			(v->setDCValue)(stod(lineParameters[5]));			
 			componentes.push_back(v);
 			break;
-			
-		
 
 		case 'C': 
 			string nome;
@@ -125,7 +123,11 @@ Netlist::Netlist(string netlistPath)
 			while (!achouAmbos && count != sizeof(componentes))
 			{
 				unsigned achou1, achou2 = 0;
+<<<<<<< HEAD
 				if ((componentes[count]->getName) == firstIndutor);
+=======
+				if ((componentes[count]->getName) == firstIndutor)
+>>>>>>> origin/master
 				{
 					achou1 = 1;
 					(t->addNode)(componentes[count]->getNode(1));
@@ -135,7 +137,11 @@ Netlist::Netlist(string netlistPath)
 					firstIndutorPosition = count;
 				}
 
+<<<<<<< HEAD
 				if ((componentes[count]->getName) == secondIndutor);
+=======
+				if ((componentes[count]->getName) == secondtIndutor);
+>>>>>>> origin/master
 				{
 					achou2 = 1;
 					(t->addNode)(componentes[count]->getNode(1));
@@ -143,10 +149,13 @@ Netlist::Netlist(string netlistPath)
 					(t->setValueSecondIndutor)(componentes[count]->getValue);
 					secondIndutorPosition = count;
 				}
+<<<<<<< HEAD
 
 				if (achou1 == 1 && achou2 == 1)
 					achouAmbos = 1;
 
+=======
+>>>>>>> origin/master
 				count = count + 1;
 			}
 			
@@ -171,7 +180,6 @@ Netlist::Netlist(string netlistPath)
 
 
 		}
-
 
 
 		index++;
