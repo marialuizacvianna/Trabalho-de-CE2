@@ -66,7 +66,6 @@ private:
 	double mIndutance; //indutancia que ele aplica no segundo indutor
 };
 
-
 class Indutor :
 	public Componente
 	{
@@ -76,3 +75,9 @@ class Indutor :
 	private:
 		double initialValue;
 	};
+
+class AmpOp :
+	public Componente {
+public:
+private:
+};

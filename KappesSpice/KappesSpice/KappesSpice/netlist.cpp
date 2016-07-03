@@ -146,6 +146,34 @@ Netlist::Netlist(string netlistPath)
 			componentes.push_back(i);
 			break;
 
+
+			case 'O':
+				string nome;
+				AmpOp *o = new Indutor;
+				nome = lineParameters[0];
+				nome.erase(nome.begin()); // remove the first letter, the component identifier
+				(o->setName)(nome);
+				(o->addNode)(stoul(lineParameters[1]));
+				(o->addNode)(stoul(lineParameters[2]));
+				(o->addNode)(stoul(lineParameters[3]));
+				(o->addNode)(stoul(lineParameters[4]));
+				componentes.push_back(o);
+				break;
+
+			case 'O':
+				string nome;
+				AmpOp *o = new Indutor;
+				nome = lineParameters[0];
+				nome.erase(nome.begin()); // remove the first letter, the component identifier
+				(o->setName)(nome);
+				(o->addNode)(stoul(lineParameters[1]));
+				(o->addNode)(stoul(lineParameters[2]));
+				(o->addNode)(stoul(lineParameters[3]));
+				(o->addNode)(stoul(lineParameters[4]));
+				componentes.push_back(o);
+				break;
+
+
 		}
 
 
