@@ -62,8 +62,19 @@ class Capacitor : public Componente
 
 class Transformador : public Componente
 {
-private:
-	double mIndutance; //indutancia que ele aplica no segundo indutor
+    public:
+		void setValueFirstIndutor(double);
+		double getValueFirstIndutor(void);
+		void setValueSecondIndutor(double);
+		double getValueSecondIndutor(void);
+		void setValueM(double);
+		double getValueM();
+
+    private:
+
+	 double mIndutance; //indutancia que ele aplica no segundo indutor
+	 double secondIndutorValue;
+	 double firstIndutorValue;
 };
 
 
