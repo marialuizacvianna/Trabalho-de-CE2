@@ -41,168 +41,190 @@ Netlist::Netlist(string netlistPath)
 		switch (linha.at(0)) //Get the first letter of the netlist, the identifier for each component
 		{
 		case 'R':
-			string nome;
+		{
+			string nomeR;
 			Resistor *r = new Resistor;
-			nome = lineParameters[0];
-			(r->addType)(nome.begin);
-			nome.erase(nome.begin()); // remove the first letter, the component identifier
-			(r->setName)(nome);
+			nomeR = lineParameters[0];
+			(r->addType)(nomeR[0]);
+			nomeR.erase(nomeR.begin()); // remove the first letter, the component identifier
+			(r->setName)(nomeR);
 			(r->addNode)(stoul(lineParameters[1]));
 			(r->addNode)(stoul(lineParameters[2]));
 			(r->setValue)(stod(lineParameters[3]));
 			componentes.push_back(r);
-			break;
+		}
+		break;
 
 		case 'I': // fonte de corrente independente
-			string nome;
+		{
+			string nomeI;
 			CurrentSource *i = new CurrentSource;
-			nome = lineParameters[0];
-			(i->addType)(nome.begin);
-			nome.erase(nome.begin()); // remove the first letter, the component identifier
-			(i->setName)(nome);
+			nomeI = lineParameters[0];
+			(i->addType)(nomeI[0]);
+			nomeI.erase(nomeI.begin()); // remove the first letter, the component identifier
+			(i->setName)(nomeI);
 			(i->addNode)(stoul(lineParameters[1]));
 			(i->addNode)(stoul(lineParameters[2]));
 			(i->setValue)(stod(lineParameters[3]));
 			(i->setPhase)(stod(lineParameters[4]));
 			(i->setDCValue)(stod(lineParameters[5]));
 			componentes.push_back(i);
-			break;
+		}
+		break;
 
 		case 'V': // fonte de corrente independente
-			string nome;
+		{
+			string nomeV;
 			VoltageSource *v = new VoltageSource;
-			nome = lineParameters[0];
-			(v->addType)(nome.begin);
-			nome.erase(nome.begin()); // remove the first letter, the component identifier
-			(v->setName)(nome);
+			nomeV = lineParameters[0];
+			(v->addType)(nomeV[0]);
+			nomeV.erase(nomeV.begin()); // remove the first letter, the component identifier
+			(v->setName)(nomeV);
 			(v->addNode)(stoul(lineParameters[1]));
 			(v->addNode)(stoul(lineParameters[2]));
 			(v->setValue)(stod(lineParameters[3]));
 			(v->setPhase)(stod(lineParameters[4]));
 			(v->setDCValue)(stod(lineParameters[5]));
 			componentes.push_back(v);
-			break;
+		}
+		break;
 
         case 'E':
-            string nome;
-            VoltageSrcCntrlVoltage *e = new VoltageSrcCntrlVoltage;
-            nome = lineParameters[0];
-			(e->addType)(nome.begin);
-            nome.erase(nome.begin()); // remove the first letter, the component identifier
-            (e->setName)(nome);
-            (e->addNode)(stoul(lineParameters[1]));
-            (e->addNode)(stoul(lineParameters[2]));
-            (e->addNode)(stoul(lineParameters[3]));
-            (e->addNode)(stoul(lineParameters[4]));
-            (e->setValue)(stod(lineParameters[5]));
-            componentes.push_back(e);
+		{
+			string nomeE;
+			VoltageSrcCntrlVoltage *e = new VoltageSrcCntrlVoltage;
+			nomeE = lineParameters[0];
+			(e->addType)(nomeE[0]);
+			nomeE.erase(nomeE.begin()); // remove the first letter, the component identifier
+			(e->setName)(nomeE);
+			(e->addNode)(stoul(lineParameters[1]));
+			(e->addNode)(stoul(lineParameters[2]));
+			(e->addNode)(stoul(lineParameters[3]));
+			(e->addNode)(stoul(lineParameters[4]));
+			(e->setValue)(stod(lineParameters[5]));
+			componentes.push_back(e);
+		}
+		break;
 
         case 'F':
-            string nome;
-            CurrentSrcCntrlCurrent *f = new CurrentSrcCntrlCurrent;
-            nome = lineParameters[0];
-			(f->addType)(nome.begin);
-            nome.erase(nome.begin()); // remove the first letter, the component identifier
-            (f->setName)(nome);
-            (f->addNode)(stoul(lineParameters[1]));
-            (f->addNode)(stoul(lineParameters[2]));
-            (f->addNode)(stoul(lineParameters[3]));
-            (f->addNode)(stoul(lineParameters[4]));
-            (f->setValue)(stod(lineParameters[5]));
-            componentes.push_back(f);
-            break;
-        case 'G':
-            string nome;
-            CurrentSrcCntrlVoltage *g = new CurrentSrcCntrlVoltage;
-            nome = lineParameters[0];
-			(g->addType)(nome.begin);
-            nome.erase(nome.begin()); // remove the first letter, the component identifier
-            (g->setName)(nome);
-            (g->addNode)(stoul(lineParameters[1]));
-            (g->addNode)(stoul(lineParameters[2]));
-            (g->addNode)(stoul(lineParameters[3]));
-            (g->addNode)(stoul(lineParameters[4]));
-            (g->setValue)(stod(lineParameters[5]));
-            componentes.push_back(g);
-            break;
+		{
+			string nomeF;
+			CurrentSrcCntrlCurrent *f = new CurrentSrcCntrlCurrent;
+			nomeF = lineParameters[0];
+			(f->addType)(nomeF[0]);
+			nomeF.erase(nomeF.begin()); // remove the first letter, the component identifier
+			(f->setName)(nomeF);
+			(f->addNode)(stoul(lineParameters[1]));
+			(f->addNode)(stoul(lineParameters[2]));
+			(f->addNode)(stoul(lineParameters[3]));
+			(f->addNode)(stoul(lineParameters[4]));
+			(f->setValue)(stod(lineParameters[5]));
+			componentes.push_back(f);
+		}
+		break;
+        
+		case 'G':
+		{
+			string nomeG;
+			CurrentSrcCntrlVoltage *g = new CurrentSrcCntrlVoltage;
+			nomeG = lineParameters[0];
+			(g->addType)(nomeG[0]);
+			nomeG.erase(nomeG.begin()); // remove the first letter, the component identifier
+			(g->setName)(nomeG);
+			(g->addNode)(stoul(lineParameters[1]));
+			(g->addNode)(stoul(lineParameters[2]));
+			(g->addNode)(stoul(lineParameters[3]));
+			(g->addNode)(stoul(lineParameters[4]));
+			(g->setValue)(stod(lineParameters[5]));
+			componentes.push_back(g);
+		}
+		break;
 
         case 'H':
-            string nome;
-            VoltageSrcCntrlCurrent *h = new VoltageSrcCntrlCurrent;
-            nome = lineParameters[0];
-			(h->addType)(nome.begin);
-            nome.erase(nome.begin()); // remove the first letter, the component identifier
-            (h->setName)(nome);
-            (h->addNode)(stoul(lineParameters[1]));
-            (h->addNode)(stoul(lineParameters[2]));
-            (h->addNode)(stoul(lineParameters[3]));
-            (h->addNode)(stoul(lineParameters[4]));
-            (h->setValue)(stod(lineParameters[5]));
-            componentes.push_back(h);
-            break;
+		{
+			string nomeH;
+			VoltageSrcCntrlCurrent *h = new VoltageSrcCntrlCurrent;
+			nomeH = lineParameters[0];
+			(h->addType)(nomeH[0]);
+			nomeH.erase(nomeH.begin()); // remove the first letter, the component identifier
+			(h->setName)(nomeH);
+			(h->addNode)(stoul(lineParameters[1]));
+			(h->addNode)(stoul(lineParameters[2]));
+			(h->addNode)(stoul(lineParameters[3]));
+			(h->addNode)(stoul(lineParameters[4]));
+			(h->setValue)(stod(lineParameters[5]));
+			componentes.push_back(h);
+		}
+		break;
 
 		case 'C':
-			string nome;
+		{
+			string nomeC;
 			Capacitor *c = new Capacitor;
-			nome = lineParameters[0];
-			(c->addType)(nome.begin);
-			nome.erase(nome.begin()); // remove the first letter, the component identifier
-			(c->setName)(nome);
+			nomeC = lineParameters[0];
+			(c->addType)(nomeC[0]);
+			nomeC.erase(nomeC.begin()); // remove the first letter, the component identifier
+			(c->setName)(nomeC);
 			(c->addNode)(stoul(lineParameters[1]));
 			(c->addNode)(stoul(lineParameters[2]));
 			(c->setValue)(stod(lineParameters[3]));
 			(c->setInitialValue)(stod(lineParameters[4]));
 			componentes.push_back(c);
-			break;
+		}
+		break;
 
   		case 'L':
-			string nome;
+		{
+			string nomeL;
 			Indutor *l = new Indutor;
-			nome = lineParameters[0];
-			(l->addType)(nome.begin());
-			nome.erase(nome.begin()); // remove the first letter, the component identifier
-			(l->setName)(nome);
+			nomeL = lineParameters[0];
+			(l->addType)(nomeL[0]);
+			nomeL.erase(nomeL.begin()); // remove the first letter, the component identifier
+			(l->setName)(nomeL);
 			(l->addNode)(stoul(lineParameters[1]));
 			(l->addNode)(stoul(lineParameters[2]));
 			(l->setValue)(stod(lineParameters[3]));
-			(l->setInitialValue)(lineParameters[4]);
+			(l->setInitialValue)(stod(lineParameters[4]));
 			componentes.push_back(l);
-			break;
+		}
+		break;
 
 		case 'K':
-			string firstIndutor, secondIndutor,nome;
+		{
+			string firstIndutor, secondIndutor, nomeK;
 			Transformador *t = new Transformador;
-			(t->addType)(nome.begin());
 			unsigned achouAmbos = 0;
-			unsigned count,countAuxiliar = 0;
+			unsigned count, countAuxiliar = 0;
 			vector<Componente*> auxiliar;
 			unsigned firstIndutorPosition, secondIndutorPosition;
 
-			firstIndutor = stoul(lineParameters[1]);
-			secondIndutor = stoul(lineParameters[2]);
+			firstIndutor = lineParameters[1];
+			secondIndutor = lineParameters[2];
 
-			nome.erase(nome.begin()); // remove the first letter, the component identifier
-			(t->setName)(nome);
+            nomeK = lineParameters[0];
+			(t->addType)(nomeK[0]);
+			nomeK.erase(nomeK.begin()); // remove the first letter, the component identifier
+			(t->setName)(nomeK);
 
 			while (!achouAmbos && count != sizeof(componentes))
 			{
 				unsigned achou1, achou2 = 0;
-				if ((componentes[count]->getName) == firstIndutor)
+				if (componentes[count]->getName() == firstIndutor)
 				{
 					achou1 = 1;
 					(t->addNode)(componentes[count]->getNode(1));
 					(t->addNode)(componentes[count]->getNode(2));
-					(t->setValueFirstIndutor)(componentes[count]->getValue);
+					(t->setValueFirstIndutor)(componentes[count]->getValue());
 					(t->setValueM)(stod(lineParameters[3]));
 					firstIndutorPosition = count;
 				}
 
-				if ((componentes[count]->getName) == secondIndutor)
+				if ((componentes[count]->getName()) == secondIndutor)
 				{
 					achou2 = 1;
 					(t->addNode)(componentes[count]->getNode(1));
 					(t->addNode)(componentes[count]->getNode(2));
-					(t->setValueSecondIndutor)(componentes[count]->getValue);
+					(t->setValueSecondIndutor)(componentes[count]->getValue());
 					secondIndutorPosition = count;
 				}
 				if (achou1 == 1 && achou2 == 1)
@@ -213,7 +235,7 @@ Netlist::Netlist(string netlistPath)
 
 			count = 0;
 			countAuxiliar = 0;
-			while (count != (sizeof(componentes)-1))
+			while (count != (sizeof(componentes) - 1))
 			{
 				if (count != firstIndutorPosition && count != secondIndutorPosition)
 				{
@@ -227,21 +249,24 @@ Netlist::Netlist(string netlistPath)
 			componentes = auxiliar;
 
 			componentes.push_back(t);
-			break;
+		}
+		break;
 
-			case 'O':
-				string nome;
-				AmpOp *o = new AmpOp;
-				nome = lineParameters[0];
-				(o->addType)(nome.begin());
-				nome.erase(nome.begin()); // remove the first letter, the component identifier
-				(o->setName)(nome);
-				(o->addNode)(stoul(lineParameters[1]));
-				(o->addNode)(stoul(lineParameters[2]));
-				(o->addNode)(stoul(lineParameters[3]));
-				(o->addNode)(stoul(lineParameters[4]));
-				componentes.push_back(o);
-				break;
+		case 'O':
+		{
+			string nomeO;
+			AmpOp *o = new AmpOp;
+			nomeO = lineParameters[0];
+			(o->addType)(nomeO[0]);
+			nomeO.erase(nomeO.begin()); // remove the first letter, the component identifier
+			(o->setName)(nomeO);
+			(o->addNode)(stoul(lineParameters[1]));
+			(o->addNode)(stoul(lineParameters[2]));
+			(o->addNode)(stoul(lineParameters[3]));
+			(o->addNode)(stoul(lineParameters[4]));
+			componentes.push_back(o);
+		}
+		break;
 
 		}
      	index++;
@@ -260,24 +285,30 @@ void Netlist::DoConductanceMatrix()
 
 	while (count != sizeof(componentes) - 1)
 	{
-		if (componentes[count]->getType == 'R')
+		if (componentes[count]->getType() == 'R')
 		{
-			value = 1/(componentes[count]->getValue);
+			value = 1/(componentes[count]->getValue());
 			G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
 			G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
 			G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
 			G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
 		}
 
-		else if (componentes[count]->getType == 'G')
+		else if (componentes[count]->getType() == 'G')
 		{
-			value = componentes[count]->getValue;
+			value = componentes[count]->getValue();
 			G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] += value;
 			G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(3)] += value;
 			G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(3)] -= value;
 			G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(2)] -= value;
 		
 		}
+
+	/*	else if (componentes[count]->getType == 'I')
+		{
+			value = componentes[count]->getValue;
+			G_Matrix[componentes[count]->getNode(0)][] -= value;
+		}*/
 
     
 		count += 1;
