@@ -13,9 +13,9 @@ void LinearSystem::InitializeG_Matrix()
 {
 	G_Matrix = new double*[rows]; //Creating the rows, a array of pointers to double.
 	for (int i = 0; i < rows; i++)
-		G_Matrix[i] = new double[rows]; //Creating the columns, the array of double
+		G_Matrix[i] = new double[rows + 1]; //Creating the columns, the array of double
 	for (int i = 0; i < rows; i++)
-		for (int j = 0; j < rows; j++)
+		for (int j = 0; j < rows + 1; j++)
 			G_Matrix[i][j] = 0;
 }
 
@@ -44,24 +44,72 @@ void LinearSystem::setRowsValue(vector <Componente *> componentes)
 
 	while (count != sizeof(componentes) - 1)
 	{
-		for (unsigned i = 0; i < componentes[count]->getNumberOfNodes; i++)
+		for (unsigned i = 0; i < (componentes[count]->getNumberOfNodes()); i++)
 		{
 			unsigned repetido = 0;
 			if (count != 0)
 			{
 				for (unsigned x = 0; x < sizeof(nosNaoRepetidos); x++)
 				{
-					if (componentes[count]->getNode[i] == nosNaoRepetidos[x])
+					if ((componentes[count]->getNode(i)) == nosNaoRepetidos[x])
 						repetido = 1;
 				}
 			}
 
 			if (repetido == 0)
-				nosNaoRepetidos.push_back(componentes[count]->getNode[i]);
+				nosNaoRepetidos.push_back(componentes[count]->getNode(i));
 		}
 
 		count += 1;
 	}
 
 	rows = sizeof(nosNaoRepetidos);
+}
+void LinearSystem::SolveLinearSystem()
+{
+	int n = rows;
+	for (int i = 0; i<n; i++) {
+		// Search for maximum in this column
+		double maxEl = abs(G_Matrix[i][i]);
+		int maxRow = i;
+		for (int k = i + 1; k<n; k++) {
+			if (abs(G_Matrix[k][i]) > maxEl) {
+				maxEl = abs(G_Matrix[k][i]);
+				maxRow = k;
+			}
+		}
+
+		// Swap maximum row with current row (column by column)
+		for (int k = i; k<n + 1; k++) {
+			double tmp = G_Matrix[maxRow][k];
+			G_Matrix[maxRow][k] = G_Matrix[i][k];
+			G_Matrix[i][k] = tmp;
+		}
+
+		// Make all rows below this one 0 in current column
+		for (int k = i + 1; k<n; k++) {
+			double c = -G_Matrix[k][i] / G_Matrix[i][i];
+			for (int j = i; j<n + 1; j++) {
+				if (i == j) {
+					G_Matrix[k][j] = 0;
+				}
+				else {
+					G_Matrix[k][j] += c * G_Matrix[i][j];
+				}
+			}
+		}
+	}
+
+	// Solve equation Ax=b for an upper triangular matrix A
+	vector<double> x(n);
+	for (int i = n - 1; i >= 0; i--) {
+		x[i] = G_Matrix[i][n] / G_Matrix[i][i];
+		for (int k = i - 1; k >= 0; k--) {
+			G_Matrix[k][n] -= G_Matrix[k][i] * x[i];
+		}
+	}
+	this->variables = x;
+
+
+
 }

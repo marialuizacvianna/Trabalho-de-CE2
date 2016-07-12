@@ -16,7 +16,7 @@ public:
 	double getValue();
 	void addType(char);
 	char getType();
-	unsigned getNumberOfNodes(void);
+	unsigned getNumberOfNodes();
 protected:
 	char Type;
 	vector<unsigned> nodes;
