@@ -150,3 +150,14 @@ double Transformador:: getValueM()
 	{
 		return numberOfNodes;
 	}
+
+	unsigned Componente::GetExtraPosition(unsigned indice)
+	{
+		return extraPosition[indice];
+	}
+
+
+	void Componente::SetExtraPosition(unsigned position)
+	{
+		extraPosition.push_back(position);
+	}

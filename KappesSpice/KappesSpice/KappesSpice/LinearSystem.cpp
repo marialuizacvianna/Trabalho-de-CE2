@@ -11,10 +11,10 @@ using namespace std;
 
 void LinearSystem::InitializeG_Matrix()
 {
-	G_Matrix = new double*[rows]; //Creating the rows, a array of pointers to double.
-	for (int i = 0; i < rows; i++)
-		G_Matrix[i] = new double[rows + 1]; //Creating the columns, the array of double
-	for (int i = 0; i < rows; i++)
+	G_Matrix = new double*[rows+extraRows]; //Creating the rows, a array of pointers to double.
+	for (int i = 0; i < rows+extraRows; i++)
+		G_Matrix[i] = new double[rows+ extraRows + 1]; //Creating the columns, the array of double
+	for (int i = 0; i < rows+ extraRows; i++)
 		for (int j = 0; j < rows + 1; j++)
 			G_Matrix[i][j] = 0;
 }
@@ -41,14 +41,21 @@ void LinearSystem::setRowsValue(vector <Componente *> componentes)
 {
 	vector<unsigned> nosNaoRepetidos;
 	unsigned count = 0;
+	unsigned extraPosition = 0;
 
 	while (count != sizeof(componentes) - 1)
 	{
+		rows = 0;
+
+		if (componentes[count]->getType() == 'H')
+			extraRows += 2;
+		
 		for (unsigned i = 0; i < (componentes[count]->getNumberOfNodes()); i++)
 		{
 			unsigned repetido = 0;
 			if (count != 0)
 			{
+				
 				for (unsigned x = 0; x < sizeof(nosNaoRepetidos); x++)
 				{
 					if ((componentes[count]->getNode(i)) == nosNaoRepetidos[x])
@@ -63,8 +70,9 @@ void LinearSystem::setRowsValue(vector <Componente *> componentes)
 		count += 1;
 	}
 
-	rows = sizeof(nosNaoRepetidos);
+	rows = sizeof(nosNaoRepetidos) ;
 }
+
 void LinearSystem::SolveLinearSystem()
 {
 	int n = rows;
@@ -110,6 +118,9 @@ void LinearSystem::SolveLinearSystem()
 	}
 	this->variables = x;
 
+}
 
-
+int LinearSystem::GetRows()
+{
+	return rows;
 }

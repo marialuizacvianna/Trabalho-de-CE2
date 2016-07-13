@@ -17,12 +17,15 @@ public:
 	void addType(char);
 	char getType();
 	unsigned getNumberOfNodes();
+	void SetExtraPosition(unsigned);
+	unsigned GetExtraPosition(unsigned);
 protected:
 	char Type;
 	vector<unsigned> nodes;
 	unsigned numberOfNodes = 0;
 	string Name;
 	double Value;
+	vector<unsigned> extraPosition;
 };
 
 class Resistor : public Componente 
@@ -52,7 +55,7 @@ public:
 	void setPhase(double);
 	double getPhase();
 	void setDCValue(double);
-	double getDCValue();	
+	double getDCValue();
 };
 
 class Capacitor : public Componente
@@ -91,10 +94,7 @@ class Indutor :
 		double initialValue;
 	};
 
-class AmpOp :
-	public Componente {
-public:
-private:
+class AmpOp :public Componente {
 };
 
 //parametro value e métodos getValue e setValue já definidos na classe Componente

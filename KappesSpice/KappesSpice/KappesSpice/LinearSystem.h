@@ -18,6 +18,8 @@ class LinearSystem : public Componente
 		void PrintG_Matrix();
 		void SolveLinearSystem(); //G_Matrix is almost a square Matrix, it's a A[i][i+1]. In the last column we hold the b for the Ax = b system. So we just need to define the number of rows.
 		double ** G_Matrix;
+		int GetRows();
+		int extraRows;
 	private:
 		int rows;
 		vector<double> variables;

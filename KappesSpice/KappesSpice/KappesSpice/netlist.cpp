@@ -16,7 +16,9 @@ Netlist::Netlist(string netlistPath)
 	string linha;
 	ifstream netlistFile;
 	unsigned index = 0;
-	
+   
+	extraRows = 0;
+
 	netlistFile.open(netlistPath);
 	if (!netlistFile)
 	{
@@ -85,6 +87,8 @@ Netlist::Netlist(string netlistPath)
 			(v->setValue)(stod(lineParameters[3]));
 			(v->setPhase)(stod(lineParameters[4]));
 			(v->setDCValue)(stod(lineParameters[5]));
+			extraRows += 1;
+			(v->SetExtraPosition)(extraRows);
 			componentes.push_back(v);
 		}
 		break;
@@ -102,6 +106,8 @@ Netlist::Netlist(string netlistPath)
 			(e->addNode)(stoul(lineParameters[3]));
 			(e->addNode)(stoul(lineParameters[4]));
 			(e->setValue)(stod(lineParameters[5]));
+			extraRows += 1;
+			(e->SetExtraPosition)(extraRows);
 			componentes.push_back(e);
 		}
 		break;
@@ -119,6 +125,8 @@ Netlist::Netlist(string netlistPath)
 			(f->addNode)(stoul(lineParameters[3]));
 			(f->addNode)(stoul(lineParameters[4]));
 			(f->setValue)(stod(lineParameters[5]));
+			extraRows += 1;
+			(f->SetExtraPosition)(extraRows);
 			componentes.push_back(f);
 		}
 		break;
@@ -153,6 +161,10 @@ Netlist::Netlist(string netlistPath)
 			(h->addNode)(stoul(lineParameters[3]));
 			(h->addNode)(stoul(lineParameters[4]));
 			(h->setValue)(stod(lineParameters[5]));
+			extraRows += 1;
+			(h->SetExtraPosition)(extraRows);
+			extraRows += 1;
+			(h->SetExtraPosition)(extraRows);
 			componentes.push_back(h);
 		}
 		break;
@@ -264,6 +276,8 @@ Netlist::Netlist(string netlistPath)
 			(o->addNode)(stoul(lineParameters[2]));
 			(o->addNode)(stoul(lineParameters[3]));
 			(o->addNode)(stoul(lineParameters[4]));
+			(o->SetExtraPosition)(extraRows);
+			extraRows += 1;
 			componentes.push_back(o);
 		}
 		break;
@@ -304,11 +318,68 @@ void Netlist::DoConductanceMatrix()
 		
 		}
 
-	/*	else if (componentes[count]->getType == 'I')
+	    else if (componentes[count]->getType() == 'I')
 		{
-			value = componentes[count]->getValue;
-			G_Matrix[componentes[count]->getNode(0)][] -= value;
-		}*/
+			value = componentes[count]->getValue();
+			G_Matrix[componentes[count]->getNode(0)][GetRows()+ extraRows + 1] -= value;
+			G_Matrix[componentes[count]->getNode(1)][GetRows() + extraRows + 1] += value;
+		}
+
+		else if (componentes[count]->getType() == 'V')
+		{
+			value = componentes[count]->getValue();
+			G_Matrix[componentes[count]->getNode(0)][GetRows() + componentes[count]->GetExtraPosition(1)] += 1;
+			G_Matrix[componentes[count]->getNode(1)][GetRows() + componentes[count]->GetExtraPosition(1)] -= 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(0)] -= 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(1)] += 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(1)][GetRows() + extraRows + 1] -= value;
+		}
+
+		else if (componentes[count]->getType() == 'E') 
+		{
+			value = componentes[count]->getValue();
+			G_Matrix[componentes[count]->getNode(0)][GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			G_Matrix[componentes[count]->getNode(1)][GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += value;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= value;
+		}
+
+
+		else if (componentes[count]->getType()  == 'F') 
+		{
+			value = componentes[count]->getValue();
+			G_Matrix[componentes[count]->getNode(0)][GetRows() + componentes[count]->GetExtraPosition(0)] += value;
+			G_Matrix[componentes[count]->getNode(1)][GetRows() + componentes[count]->GetExtraPosition(0)] -= value;
+			G_Matrix[componentes[count]->getNode(2)][GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			G_Matrix[componentes[count]->getNode(3)][GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] -= 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
+		}
+
+		else if (componentes[count]->getType() == 'H') {
+			value = componentes[count]->getValue();
+			G_Matrix[componentes[count]->getNode(0)][GetRows() + componentes[count]->GetExtraPosition(1)] += 1;
+			G_Matrix[componentes[count]->getNode(1)][GetRows() + componentes[count]->GetExtraPosition(1)] -= 1;
+			G_Matrix[componentes[count]->getNode(2)][GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			G_Matrix[componentes[count]->getNode(3)][GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(0)] -= 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(1)] += 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] -= 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(1)]
+				[GetRows() + componentes[count]->GetExtraPosition(0)] += value;
+		}
+
+		else if (componentes[count]->getType() == 'O')
+		{
+			G_Matrix[componentes[count]->getNode(0)][GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			G_Matrix[componentes[count]->getNode(1)][GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += 1;
+			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= 1;
+		}
+
 
     
 		count += 1;
