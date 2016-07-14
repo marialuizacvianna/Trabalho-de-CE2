@@ -11,12 +11,12 @@
 
 using namespace std;
 
-class Netlist : 
-public LinearSystem
+class Netlist  
 {
 public:
 	Netlist(string netlistPath);
 	void DoConductanceMatrix(void);
+	LinearSystem SistemaLinear;
 private:
 	vector <string> netlist;
 	vector <Componente *> componentes;

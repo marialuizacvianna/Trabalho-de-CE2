@@ -11,11 +11,11 @@ using namespace std;
 
 void LinearSystem::InitializeG_Matrix()
 {
-	G_Matrix = new double*[rows+extraRows]; //Creating the rows, a array of pointers to double.
-	for (int i = 0; i < rows+extraRows; i++)
-		G_Matrix[i] = new double[rows+ extraRows + 1]; //Creating the columns, the array of double
-	for (int i = 0; i < rows+ extraRows; i++)
-		for (int j = 0; j < rows + 1; j++)
+	G_Matrix = new double*[(rows+extraRows)]; //Creating the rows, a array of pointers to double.
+	for (int i = 0; i < (rows+ extraRows); i++)
+		G_Matrix[i] = new double[(rows+ extraRows) + 1]; //Creating the columns, the array of double
+	for (int i = 0; i < (rows + extraRows); i++)
+		for (int j = 0; j < (rows + extraRows) + 1; j++)
 			G_Matrix[i][j] = 0;
 }
 
@@ -23,10 +23,10 @@ void LinearSystem::PrintG_Matrix()
 {
 	cout << endl;
 
-	for (int i = 0; i < rows; i++)
+	for (int i = 0; i < (rows + extraRows); i++)
 	{
 		cout << "| ";
-		for (int j = 0; j < rows; j++)
+		for (int j = 0; j < (rows + extraRows); j++)
 		{
 			cout << G_Matrix[i][j];
 			cout << " ";
@@ -75,7 +75,7 @@ void LinearSystem::setRowsValue(vector <Componente *> componentes)
 
 void LinearSystem::SolveLinearSystem()
 {
-	int n = rows;
+	int n = (rows + extraRows);
 	for (int i = 0; i<n; i++) {
 		// Search for maximum in this column
 		double maxEl = abs(G_Matrix[i][i]);
@@ -120,6 +120,13 @@ void LinearSystem::SolveLinearSystem()
 
 }
 
+void LinearSystem::PrintVariables()
+{
+	for (int i = 0; i < (rows + extraRows); i++)
+		cout << variables[i];
+	cout << endl;
+
+}
 int LinearSystem::GetRows()
 {
 	return rows;

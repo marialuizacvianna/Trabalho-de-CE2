@@ -17,7 +17,7 @@ Netlist::Netlist(string netlistPath)
 	ifstream netlistFile;
 	unsigned index = 0;
    
-	extraRows = 0;
+	SistemaLinear.extraRows = 0;
 
 	netlistFile.open(netlistPath);
 	if (!netlistFile)
@@ -87,8 +87,8 @@ Netlist::Netlist(string netlistPath)
 			(v->setValue)(stod(lineParameters[3]));
 			(v->setPhase)(stod(lineParameters[4]));
 			(v->setDCValue)(stod(lineParameters[5]));
-			extraRows += 1;
-			(v->SetExtraPosition)(extraRows);
+			SistemaLinear.extraRows += 1;
+			(v->SetExtraPosition)(SistemaLinear.extraRows);
 			componentes.push_back(v);
 		}
 		break;
@@ -106,8 +106,8 @@ Netlist::Netlist(string netlistPath)
 			(e->addNode)(stoul(lineParameters[3]));
 			(e->addNode)(stoul(lineParameters[4]));
 			(e->setValue)(stod(lineParameters[5]));
-			extraRows += 1;
-			(e->SetExtraPosition)(extraRows);
+			SistemaLinear.extraRows += 1;
+			(e->SetExtraPosition)(SistemaLinear.extraRows);
 			componentes.push_back(e);
 		}
 		break;
@@ -125,8 +125,8 @@ Netlist::Netlist(string netlistPath)
 			(f->addNode)(stoul(lineParameters[3]));
 			(f->addNode)(stoul(lineParameters[4]));
 			(f->setValue)(stod(lineParameters[5]));
-			extraRows += 1;
-			(f->SetExtraPosition)(extraRows);
+			SistemaLinear.extraRows += 1;
+			(f->SetExtraPosition)(SistemaLinear.extraRows);
 			componentes.push_back(f);
 		}
 		break;
@@ -161,10 +161,10 @@ Netlist::Netlist(string netlistPath)
 			(h->addNode)(stoul(lineParameters[3]));
 			(h->addNode)(stoul(lineParameters[4]));
 			(h->setValue)(stod(lineParameters[5]));
-			extraRows += 1;
-			(h->SetExtraPosition)(extraRows);
-			extraRows += 1;
-			(h->SetExtraPosition)(extraRows);
+			SistemaLinear.extraRows += 1;
+			(h->SetExtraPosition)(SistemaLinear.extraRows);
+			SistemaLinear.extraRows += 1;
+			(h->SetExtraPosition)(SistemaLinear.extraRows);
 			componentes.push_back(h);
 		}
 		break;
@@ -276,8 +276,8 @@ Netlist::Netlist(string netlistPath)
 			(o->addNode)(stoul(lineParameters[2]));
 			(o->addNode)(stoul(lineParameters[3]));
 			(o->addNode)(stoul(lineParameters[4]));
-			(o->SetExtraPosition)(extraRows);
-			extraRows += 1;
+			(o->SetExtraPosition)(SistemaLinear.extraRows);
+			SistemaLinear.extraRows += 1;
 			componentes.push_back(o);
 		}
 		break;
@@ -292,8 +292,8 @@ Netlist::Netlist(string netlistPath)
 
 void Netlist::DoConductanceMatrix()
 {
-	setRowsValue(componentes);
-	InitializeG_Matrix();
+	SistemaLinear.setRowsValue(componentes);
+	SistemaLinear.InitializeG_Matrix();
 	unsigned count = 0;
 	double value;
 
@@ -302,82 +302,84 @@ void Netlist::DoConductanceMatrix()
 		if (componentes[count]->getType() == 'R')
 		{
 			value = 1/(componentes[count]->getValue());
-			G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
-			G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
-			G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
-			G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
+			cout << "RESISTOR" << endl;
 		}
 
 		else if (componentes[count]->getType() == 'G')
 		{
 			value = componentes[count]->getValue();
-			G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] += value;
-			G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(3)] += value;
-			G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(3)] -= value;
-			G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(2)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(3)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(3)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(2)] -= value;
 		
 		}
 
 	    else if (componentes[count]->getType() == 'I')
 		{
 			value = componentes[count]->getValue();
-			G_Matrix[componentes[count]->getNode(0)][GetRows()+ extraRows + 1] -= value;
-			G_Matrix[componentes[count]->getNode(1)][GetRows() + extraRows + 1] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value; // eu acho que aqui caberia somente (rows + 1)
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] += value;
 		}
 
 		else if (componentes[count]->getType() == 'V')
 		{
 			value = componentes[count]->getValue();
-			G_Matrix[componentes[count]->getNode(0)][GetRows() + componentes[count]->GetExtraPosition(1)] += 1;
-			G_Matrix[componentes[count]->getNode(1)][GetRows() + componentes[count]->GetExtraPosition(1)] -= 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(0)] -= 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(1)] += 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(1)][GetRows() + extraRows + 1] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(1)] += 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
+			cout << "FONTE DE TENSAO" << endl;
 		}
 
 		else if (componentes[count]->getType() == 'E') 
 		{
 			value = componentes[count]->getValue();
-			G_Matrix[componentes[count]->getNode(0)][GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
-			G_Matrix[componentes[count]->getNode(1)][GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += value;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += value;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= value;
 		}
 
 
 		else if (componentes[count]->getType()  == 'F') 
 		{
 			value = componentes[count]->getValue();
-			G_Matrix[componentes[count]->getNode(0)][GetRows() + componentes[count]->GetExtraPosition(0)] += value;
-			G_Matrix[componentes[count]->getNode(1)][GetRows() + componentes[count]->GetExtraPosition(0)] -= value;
-			G_Matrix[componentes[count]->getNode(2)][GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
-			G_Matrix[componentes[count]->getNode(3)][GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] -= 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(3)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
 		}
 
 		else if (componentes[count]->getType() == 'H') {
 			value = componentes[count]->getValue();
-			G_Matrix[componentes[count]->getNode(0)][GetRows() + componentes[count]->GetExtraPosition(1)] += 1;
-			G_Matrix[componentes[count]->getNode(1)][GetRows() + componentes[count]->GetExtraPosition(1)] -= 1;
-			G_Matrix[componentes[count]->getNode(2)][GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
-			G_Matrix[componentes[count]->getNode(3)][GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(0)] -= 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(1)] += 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] -= 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(1)]
-				[GetRows() + componentes[count]->GetExtraPosition(0)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] -= 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(3)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(1)] += 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
 		}
 
 		else if (componentes[count]->getType() == 'O')
 		{
-			G_Matrix[componentes[count]->getNode(0)][GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
-			G_Matrix[componentes[count]->getNode(1)][GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += 1;
-			G_Matrix[GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= 1;
+			cout << "AMPOP" << endl;
 		}
 
 
