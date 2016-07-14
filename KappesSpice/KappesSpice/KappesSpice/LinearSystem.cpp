@@ -47,9 +47,6 @@ void LinearSystem::setRowsValue(vector <Componente *> componentes)
 	{
 		rows = 0;
 
-		if (componentes[count]->getType() == 'H')
-			extraRows += 2;
-		
 		for (unsigned i = 0; i < (componentes[count]->getNumberOfNodes()); i++)
 		{
 			unsigned repetido = 0;
