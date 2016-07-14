@@ -92,7 +92,7 @@ Netlist::Netlist(string netlistPath)
 			componentes.push_back(v);
 		}
 		break;
-
+		
         case 'E':
 		{
 			string nomeE;
@@ -281,7 +281,7 @@ Netlist::Netlist(string netlistPath)
 			componentes.push_back(o);
 		}
 		break;
-
+		
 		}
      	index++;
 	}
@@ -293,7 +293,9 @@ Netlist::Netlist(string netlistPath)
 void Netlist::DoConductanceMatrix()
 {
 	SistemaLinear.setRowsValue(componentes);
+	cout << "1" << endl;
 	SistemaLinear.InitializeG_Matrix();
+	cout << "2" << endl;
 	unsigned count = 0;
 	double value;
 

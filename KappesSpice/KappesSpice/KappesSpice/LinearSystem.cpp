@@ -48,7 +48,7 @@ void LinearSystem::setRowsValue(vector <Componente *> componentes)
 		rows = 0;
 
 		if (componentes[count]->getType() == 'H')
-			extraRows += 2;
+			extraRows += 2; //essa informacao já foi contada no metodo que le a netlist
 		
 		for (unsigned i = 0; i < (componentes[count]->getNumberOfNodes()); i++)
 		{
