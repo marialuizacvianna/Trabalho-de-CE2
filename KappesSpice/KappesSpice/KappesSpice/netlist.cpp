@@ -52,6 +52,8 @@ Netlist::Netlist(string netlistPath)
 			(r->setName)(nomeR);
 			(r->addNode)(stoul(lineParameters[1]));
 			(r->addNode)(stoul(lineParameters[2]));
+			for (int i = 1; i < 3; i++)
+				checkNewNode(stoul(lineParameters[i]));
 			(r->setValue)(stod(lineParameters[3]));
 			componentes.push_back(r);
 		}
@@ -67,6 +69,8 @@ Netlist::Netlist(string netlistPath)
 			(i->setName)(nomeI);
 			(i->addNode)(stoul(lineParameters[1]));
 			(i->addNode)(stoul(lineParameters[2]));
+			for (int i = 1; i < 3; i++)
+				checkNewNode(stoul(lineParameters[i]));
 			(i->setValue)(stod(lineParameters[3]));
 			(i->setPhase)(stod(lineParameters[4]));
 			(i->setDCValue)(stod(lineParameters[5]));
@@ -84,6 +88,8 @@ Netlist::Netlist(string netlistPath)
 			(v->setName)(nomeV);
 			(v->addNode)(stoul(lineParameters[1]));
 			(v->addNode)(stoul(lineParameters[2]));
+			for (int i = 1; i < 3; i++)
+				checkNewNode(stoul(lineParameters[i]));
 			(v->setValue)(stod(lineParameters[3]));
 			(v->setPhase)(stod(lineParameters[4]));
 			(v->setDCValue)(stod(lineParameters[5]));
@@ -105,6 +111,8 @@ Netlist::Netlist(string netlistPath)
 			(e->addNode)(stoul(lineParameters[2]));
 			(e->addNode)(stoul(lineParameters[3]));
 			(e->addNode)(stoul(lineParameters[4]));
+			for (int i = 1; i < 5; i++)
+				checkNewNode(stoul(lineParameters[i]));
 			(e->setValue)(stod(lineParameters[5]));
 			SistemaLinear.extraRows += 1;
 			(e->SetExtraPosition)(SistemaLinear.extraRows);
@@ -124,6 +132,8 @@ Netlist::Netlist(string netlistPath)
 			(f->addNode)(stoul(lineParameters[2]));
 			(f->addNode)(stoul(lineParameters[3]));
 			(f->addNode)(stoul(lineParameters[4]));
+			for (int i = 1; i < 5; i++)
+				checkNewNode(stoul(lineParameters[i]));
 			(f->setValue)(stod(lineParameters[5]));
 			SistemaLinear.extraRows += 1;
 			(f->SetExtraPosition)(SistemaLinear.extraRows);
@@ -143,6 +153,8 @@ Netlist::Netlist(string netlistPath)
 			(g->addNode)(stoul(lineParameters[2]));
 			(g->addNode)(stoul(lineParameters[3]));
 			(g->addNode)(stoul(lineParameters[4]));
+			for (int i = 1; i < 5; i++)
+				checkNewNode(stoul(lineParameters[i]));
 			(g->setValue)(stod(lineParameters[5]));
 			componentes.push_back(g);
 		}
@@ -160,6 +172,8 @@ Netlist::Netlist(string netlistPath)
 			(h->addNode)(stoul(lineParameters[2]));
 			(h->addNode)(stoul(lineParameters[3]));
 			(h->addNode)(stoul(lineParameters[4]));
+			for (int i = 1; i < 5; i++)
+				checkNewNode(stoul(lineParameters[i]));
 			(h->setValue)(stod(lineParameters[5]));
 			SistemaLinear.extraRows += 1;
 			(h->SetExtraPosition)(SistemaLinear.extraRows);
@@ -179,6 +193,8 @@ Netlist::Netlist(string netlistPath)
 			(c->setName)(nomeC);
 			(c->addNode)(stoul(lineParameters[1]));
 			(c->addNode)(stoul(lineParameters[2]));
+			for (int i = 1; i < 3; i++)
+				checkNewNode(stoul(lineParameters[i]));
 			(c->setValue)(stod(lineParameters[3]));
 			(c->setInitialValue)(stod(lineParameters[4]));
 			componentes.push_back(c);
@@ -195,13 +211,15 @@ Netlist::Netlist(string netlistPath)
 			(l->setName)(nomeL);
 			(l->addNode)(stoul(lineParameters[1]));
 			(l->addNode)(stoul(lineParameters[2]));
+			for (int i = 1; i < 3; i++)
+				checkNewNode(stoul(lineParameters[i]));
 			(l->setValue)(stod(lineParameters[3]));
 			(l->setInitialValue)(stod(lineParameters[4]));
 			componentes.push_back(l);
 		}
 		break;
 
-		case 'K':
+		case 'K': //nao esta contando os nos
 		{
 			string firstIndutor, secondIndutor, nomeK;
 			Transformador *t = new Transformador;
@@ -276,8 +294,10 @@ Netlist::Netlist(string netlistPath)
 			(o->addNode)(stoul(lineParameters[2]));
 			(o->addNode)(stoul(lineParameters[3]));
 			(o->addNode)(stoul(lineParameters[4]));
-			(o->SetExtraPosition)(SistemaLinear.extraRows);
+			for(int i = 1; i < 5; i++)
+				checkNewNode(stoul(lineParameters[i]));
 			SistemaLinear.extraRows += 1;
+			(o->SetExtraPosition)(SistemaLinear.extraRows);
 			componentes.push_back(o);
 		}
 		break;
@@ -289,26 +309,49 @@ Netlist::Netlist(string netlistPath)
 	netlistFile.close();
 }
 
+void Netlist::checkNewNode(unsigned node)
+{
+	bool achou = false;
+
+	for (unsigned i = 0; i < netlistNodes.size(); i++)
+	{
+		if (node == netlistNodes[i])
+			achou = true;
+	}
+	if (!achou)
+		netlistNodes.push_back(node);
+}
+
+unsigned Netlist::GetNumberOfNodes()
+{
+	return netlistNodes.size();
+}
+void Netlist::PrintNodes()
+{
+	for (unsigned i = 0; i < netlistNodes.size(); i++)
+		cout << netlistNodes[i] << endl;
+	
+}
+
+
 
 void Netlist::DoConductanceMatrix()
 {
-	SistemaLinear.setRowsValue(componentes);
-	cout << "1" << endl;
+	PrintNodes();
+	SistemaLinear.setRowsValue(GetNumberOfNodes());
 	SistemaLinear.InitializeG_Matrix();
-	cout << "2" << endl;
-	unsigned count = 0;
 	double value;
 
-	while (count != sizeof(componentes) - 1)
+	for (unsigned count = 0; count < componentes.size(); count++)
 	{
-		if (componentes[count]->getType() == 'R')
+		if (componentes[count]->getType() == 'R') //funcionando
 		{
 			value = 1/(componentes[count]->getValue());
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
-			cout << "RESISTOR" << endl;
+
 		}
 
 		else if (componentes[count]->getType() == 'G')
@@ -328,15 +371,15 @@ void Netlist::DoConductanceMatrix()
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] += value;
 		}
 
-		else if (componentes[count]->getType() == 'V')
+		else if (componentes[count]->getType() == 'V') //funcionando
 		{
 			value = componentes[count]->getValue();
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] += 1;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(0)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(1)] += 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
-			cout << "FONTE DE TENSAO" << endl;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			cout << SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0) << endl;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
 		}
 
 		else if (componentes[count]->getType() == 'E') 
@@ -375,18 +418,16 @@ void Netlist::DoConductanceMatrix()
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
 		}
 
-		else if (componentes[count]->getType() == 'O')
+		else if (componentes[count]->getType() == 'O') //funcionando
 		{
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += 1;
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= 1;
-			cout << "AMPOP" << endl;
 		}
 
 
     
-		count += 1;
 	}
 	
 

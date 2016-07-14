@@ -16,8 +16,12 @@ class Netlist
 public:
 	Netlist(string netlistPath);
 	void DoConductanceMatrix(void);
+	void checkNewNode(unsigned);
+	unsigned GetNumberOfNodes();
+	void PrintNodes();
 	LinearSystem SistemaLinear;
 private:
+	vector<unsigned> netlistNodes;
 	vector <string> netlist;
 	vector <Componente *> componentes;
 };

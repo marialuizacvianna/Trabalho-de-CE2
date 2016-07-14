@@ -23,10 +23,10 @@ void LinearSystem::PrintG_Matrix()
 {
 	cout << endl;
 
-	for (int i = 0; i < (rows + extraRows); i++)
+	for (int i = 1; i < (rows + extraRows); i++) //i starts from 1, becouse we ignore the node 0( AKA ground)
 	{
 		cout << "| ";
-		for (int j = 0; j < (rows + extraRows); j++)
+		for (int j = 1; j < (rows + extraRows + 1); j++) //j starts from 1, becouse we ignore the node 0( AKA ground)
 		{
 			cout << G_Matrix[i][j];
 			cout << " ";
@@ -37,7 +37,7 @@ void LinearSystem::PrintG_Matrix()
 	cout << endl;
 }
 
-void LinearSystem::setRowsValue(vector <Componente *> componentes)
+/*void LinearSystem::setRowsValue(vector <Componente *> componentes)
 {
 	vector<unsigned> nosNaoRepetidos;
 	unsigned count = 0;
@@ -71,6 +71,11 @@ void LinearSystem::setRowsValue(vector <Componente *> componentes)
 	}
 
 	rows = sizeof(nosNaoRepetidos) ;
+}*/
+
+void LinearSystem::setRowsValue(unsigned numberOfnodes)
+{
+	rows = numberOfnodes;
 }
 
 void LinearSystem::SolveLinearSystem()
@@ -129,5 +134,5 @@ void LinearSystem::PrintVariables()
 }
 int LinearSystem::GetRows()
 {
-	return rows;
+	return rows - 1; // we dont recognize the 0 (AKA Ground)
 }
