@@ -139,3 +139,20 @@ int LinearSystem::GetRows()
 {
 	return rows - 1; // we dont recognize the 0 (AKA Ground)
 }
+void LinearSystem::SaveDC_Matrix()
+{
+	DC_Matrix = new double*[(rows + extraRows)]; //Creating the rows, a array of pointers to double.
+	for (int i = 0; i < (rows + extraRows); i++)
+		DC_Matrix[i] = new double[(rows + extraRows) + 1]; //Creating the columns, the array of double
+	for (int i = 0; i < (rows + extraRows); i++)
+		for (int j = 0; j < (rows + extraRows) + 1; j++)
+			DC_Matrix[i][j] = G_Matrix[i][j];
+
+}
+void LinearSystem::ResetG_Matrix()
+{
+	for (int i = 0; i < (rows + extraRows); i++)
+		for (int j = 0; j < (rows + extraRows) + 1; j++)
+			G_Matrix[i][j] = 0;
+
+}

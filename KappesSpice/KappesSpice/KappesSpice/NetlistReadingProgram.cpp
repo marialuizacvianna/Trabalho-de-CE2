@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 	const char* netlistPath = "..\\..\\..\\simples.net";
 	Netlist netlist(netlistPath);
 	cout << "FEZ NETLIST" << endl;
-	netlist.DoConductanceMatrix();
+	netlist.DoConductanceMatrixDC();
 	cout << "FEZ A MATRIZ" << endl;
 	netlist.SistemaLinear.PrintG_Matrix();
 	netlist.SistemaLinear.SolveLinearSystem();

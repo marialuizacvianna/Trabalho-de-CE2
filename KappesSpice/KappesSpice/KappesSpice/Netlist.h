@@ -15,12 +15,14 @@ class Netlist
 {
 public:
 	Netlist(string netlistPath);
-	void DoConductanceMatrix(void);
+	void DoConductanceMatrixDC(void);
+	void DoConductanceMatrixAC(void);
 	void checkNewNode(unsigned);
 	unsigned GetNumberOfNodes();
 	void PrintNodes();
 	LinearSystem SistemaLinear;
 private:
+	float frequency;
 	vector<unsigned> netlistNodes;
 	vector <string> netlist;
 	vector <Componente *> componentes;

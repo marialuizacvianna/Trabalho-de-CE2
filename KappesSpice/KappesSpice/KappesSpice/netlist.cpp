@@ -9,7 +9,11 @@
 #include "Componente.h"
 #include "Netlist.h"
 
+
+#define DC_RESISTANCE_C  1e9
+
 using namespace std;
+
 
 Netlist::Netlist(string netlistPath)
 {
@@ -59,149 +63,7 @@ Netlist::Netlist(string netlistPath)
 		}
 		break;
 
-		case 'I': // fonte de corrente independente
-		{
-			string nomeI;
-			CurrentSource *i = new CurrentSource;
-			nomeI = lineParameters[0];
-			(i->addType)(nomeI[0]);
-			nomeI.erase(nomeI.begin()); // remove the first letter, the component identifier
-			(i->setName)(nomeI);
-			(i->addNode)(stoul(lineParameters[1]));
-			(i->addNode)(stoul(lineParameters[2]));
-			for (int i = 1; i < 3; i++)
-				checkNewNode(stoul(lineParameters[i]));
-			(i->setValue)(stod(lineParameters[3]));
-			(i->setPhase)(stod(lineParameters[4]));
-			(i->setDCValue)(stod(lineParameters[5]));
-			componentes.push_back(i);
-		}
-		break;
-
-		case 'V': // fonte de corrente independente
-		{
-			string nomeV;
-			VoltageSource *v = new VoltageSource;
-			nomeV = lineParameters[0];
-			(v->addType)(nomeV[0]);
-			nomeV.erase(nomeV.begin()); // remove the first letter, the component identifier
-			(v->setName)(nomeV);
-			(v->addNode)(stoul(lineParameters[1]));
-			(v->addNode)(stoul(lineParameters[2]));
-			for (int i = 1; i < 3; i++)
-				checkNewNode(stoul(lineParameters[i]));
-			(v->setValue)(stod(lineParameters[3]));
-			(v->setPhase)(stod(lineParameters[4]));
-			(v->setDCValue)(stod(lineParameters[5]));
-			SistemaLinear.extraRows += 1;
-			(v->SetExtraPosition)(SistemaLinear.extraRows);
-			componentes.push_back(v);
-		}
-		break;
-		
-        case 'E':
-		{
-			string nomeE;
-			VoltageSrcCntrlVoltage *e = new VoltageSrcCntrlVoltage;
-			nomeE = lineParameters[0];
-			(e->addType)(nomeE[0]);
-			nomeE.erase(nomeE.begin()); // remove the first letter, the component identifier
-			(e->setName)(nomeE);
-			(e->addNode)(stoul(lineParameters[1]));
-			(e->addNode)(stoul(lineParameters[2]));
-			(e->addNode)(stoul(lineParameters[3]));
-			(e->addNode)(stoul(lineParameters[4]));
-			for (int i = 1; i < 5; i++)
-				checkNewNode(stoul(lineParameters[i]));
-			(e->setValue)(stod(lineParameters[5]));
-			SistemaLinear.extraRows += 1;
-			(e->SetExtraPosition)(SistemaLinear.extraRows);
-			componentes.push_back(e);
-		}
-		break;
-
-        case 'F':
-		{
-			string nomeF;
-			CurrentSrcCntrlCurrent *f = new CurrentSrcCntrlCurrent;
-			nomeF = lineParameters[0];
-			(f->addType)(nomeF[0]);
-			nomeF.erase(nomeF.begin()); // remove the first letter, the component identifier
-			(f->setName)(nomeF);
-			(f->addNode)(stoul(lineParameters[1]));
-			(f->addNode)(stoul(lineParameters[2]));
-			(f->addNode)(stoul(lineParameters[3]));
-			(f->addNode)(stoul(lineParameters[4]));
-			for (int i = 1; i < 5; i++)
-				checkNewNode(stoul(lineParameters[i]));
-			(f->setValue)(stod(lineParameters[5]));
-			SistemaLinear.extraRows += 1;
-			(f->SetExtraPosition)(SistemaLinear.extraRows);
-			componentes.push_back(f);
-		}
-		break;
-        
-		case 'G':
-		{
-			string nomeG;
-			CurrentSrcCntrlVoltage *g = new CurrentSrcCntrlVoltage;
-			nomeG = lineParameters[0];
-			(g->addType)(nomeG[0]);
-			nomeG.erase(nomeG.begin()); // remove the first letter, the component identifier
-			(g->setName)(nomeG);
-			(g->addNode)(stoul(lineParameters[1]));
-			(g->addNode)(stoul(lineParameters[2]));
-			(g->addNode)(stoul(lineParameters[3]));
-			(g->addNode)(stoul(lineParameters[4]));
-			for (int i = 1; i < 5; i++)
-				checkNewNode(stoul(lineParameters[i]));
-			(g->setValue)(stod(lineParameters[5]));
-			componentes.push_back(g);
-		}
-		break;
-
-        case 'H':
-		{
-			string nomeH;
-			VoltageSrcCntrlCurrent *h = new VoltageSrcCntrlCurrent;
-			nomeH = lineParameters[0];
-			(h->addType)(nomeH[0]);
-			nomeH.erase(nomeH.begin()); // remove the first letter, the component identifier
-			(h->setName)(nomeH);
-			(h->addNode)(stoul(lineParameters[1]));
-			(h->addNode)(stoul(lineParameters[2]));
-			(h->addNode)(stoul(lineParameters[3]));
-			(h->addNode)(stoul(lineParameters[4]));
-			for (int i = 1; i < 5; i++)
-				checkNewNode(stoul(lineParameters[i]));
-			(h->setValue)(stod(lineParameters[5]));
-			SistemaLinear.extraRows += 1;
-			(h->SetExtraPosition)(SistemaLinear.extraRows);
-			SistemaLinear.extraRows += 1;
-			(h->SetExtraPosition)(SistemaLinear.extraRows);
-			componentes.push_back(h);
-		}
-		break;
-
-		case 'C':
-		{
-			string nomeC;
-			Capacitor *c = new Capacitor;
-			nomeC = lineParameters[0];
-			(c->addType)(nomeC[0]);
-			nomeC.erase(nomeC.begin()); // remove the first letter, the component identifier
-			(c->setName)(nomeC);
-			(c->addNode)(stoul(lineParameters[1]));
-			(c->addNode)(stoul(lineParameters[2]));
-			for (int i = 1; i < 3; i++)
-				checkNewNode(stoul(lineParameters[i]));
-			(c->setValue)(stod(lineParameters[3]));
-			(c->setInitialValue)(stod(lineParameters[4]));
-			componentes.push_back(c);
-		}
-		break;
-
-  		case 'L':
+		case 'L':
 		{
 			string nomeL;
 			Indutor *l = new Indutor;
@@ -231,7 +93,7 @@ Netlist::Netlist(string netlistPath)
 			firstIndutor = lineParameters[1];
 			secondIndutor = lineParameters[2];
 
-            nomeK = lineParameters[0];
+			nomeK = lineParameters[0];
 			(t->addType)(nomeK[0]);
 			nomeK.erase(nomeK.begin()); // remove the first letter, the component identifier
 			(t->setName)(nomeK);
@@ -282,6 +144,150 @@ Netlist::Netlist(string netlistPath)
 		}
 		break;
 
+		case 'C':
+		{
+			string nomeC;
+			Capacitor *c = new Capacitor;
+			nomeC = lineParameters[0];
+			(c->addType)(nomeC[0]);
+			nomeC.erase(nomeC.begin()); // remove the first letter, the component identifier
+			(c->setName)(nomeC);
+			(c->addNode)(stoul(lineParameters[1]));
+			(c->addNode)(stoul(lineParameters[2]));
+			for (int i = 1; i < 3; i++)
+				checkNewNode(stoul(lineParameters[i]));
+			(c->setValue)(stod(lineParameters[3]));
+			(c->setInitialValue)(stod(lineParameters[4]));
+			componentes.push_back(c);
+		}
+		break;
+
+		case 'E':
+		{
+			string nomeE;
+			VoltageSrcCntrlVoltage *e = new VoltageSrcCntrlVoltage;
+			nomeE = lineParameters[0];
+			(e->addType)(nomeE[0]);
+			nomeE.erase(nomeE.begin()); // remove the first letter, the component identifier
+			(e->setName)(nomeE);
+			(e->addNode)(stoul(lineParameters[1]));
+			(e->addNode)(stoul(lineParameters[2]));
+			(e->addNode)(stoul(lineParameters[3]));
+			(e->addNode)(stoul(lineParameters[4]));
+			for (int i = 1; i < 5; i++)
+				checkNewNode(stoul(lineParameters[i]));
+			(e->setValue)(stod(lineParameters[5]));
+			SistemaLinear.extraRows += 1;
+			(e->SetExtraPosition)(SistemaLinear.extraRows);
+			componentes.push_back(e);
+		}
+		break;
+
+		case 'F':
+		{
+			string nomeF;
+			CurrentSrcCntrlCurrent *f = new CurrentSrcCntrlCurrent;
+			nomeF = lineParameters[0];
+			(f->addType)(nomeF[0]);
+			nomeF.erase(nomeF.begin()); // remove the first letter, the component identifier
+			(f->setName)(nomeF);
+			(f->addNode)(stoul(lineParameters[1]));
+			(f->addNode)(stoul(lineParameters[2]));
+			(f->addNode)(stoul(lineParameters[3]));
+			(f->addNode)(stoul(lineParameters[4]));
+			for (int i = 1; i < 5; i++)
+				checkNewNode(stoul(lineParameters[i]));
+			(f->setValue)(stod(lineParameters[5]));
+			SistemaLinear.extraRows += 1;
+			(f->SetExtraPosition)(SistemaLinear.extraRows);
+			componentes.push_back(f);
+		}
+		break;
+
+		case 'G':
+		{
+			string nomeG;
+			CurrentSrcCntrlVoltage *g = new CurrentSrcCntrlVoltage;
+			nomeG = lineParameters[0];
+			(g->addType)(nomeG[0]);
+			nomeG.erase(nomeG.begin()); // remove the first letter, the component identifier
+			(g->setName)(nomeG);
+			(g->addNode)(stoul(lineParameters[1]));
+			(g->addNode)(stoul(lineParameters[2]));
+			(g->addNode)(stoul(lineParameters[3]));
+			(g->addNode)(stoul(lineParameters[4]));
+			for (int i = 1; i < 5; i++)
+				checkNewNode(stoul(lineParameters[i]));
+			(g->setValue)(stod(lineParameters[5]));
+			componentes.push_back(g);
+		}
+		break;
+
+		case 'H':
+		{
+			string nomeH;
+			VoltageSrcCntrlCurrent *h = new VoltageSrcCntrlCurrent;
+			nomeH = lineParameters[0];
+			(h->addType)(nomeH[0]);
+			nomeH.erase(nomeH.begin()); // remove the first letter, the component identifier
+			(h->setName)(nomeH);
+			(h->addNode)(stoul(lineParameters[1]));
+			(h->addNode)(stoul(lineParameters[2]));
+			(h->addNode)(stoul(lineParameters[3]));
+			(h->addNode)(stoul(lineParameters[4]));
+			for (int i = 1; i < 5; i++)
+				checkNewNode(stoul(lineParameters[i]));
+			(h->setValue)(stod(lineParameters[5]));
+			SistemaLinear.extraRows += 1;
+			(h->SetExtraPosition)(SistemaLinear.extraRows);
+			SistemaLinear.extraRows += 1;
+			(h->SetExtraPosition)(SistemaLinear.extraRows);
+			componentes.push_back(h);
+		}
+		break;
+
+		case 'I': // fonte de corrente independente
+		{
+			string nomeI;
+			CurrentSource *i = new CurrentSource;
+			nomeI = lineParameters[0];
+			(i->addType)(nomeI[0]);
+			nomeI.erase(nomeI.begin()); // remove the first letter, the component identifier
+			(i->setName)(nomeI);
+			(i->addNode)(stoul(lineParameters[1]));
+			(i->addNode)(stoul(lineParameters[2]));
+			for (int i = 1; i < 3; i++)
+				checkNewNode(stoul(lineParameters[i]));
+			(i->setValue)(stod(lineParameters[3]));
+			(i->setPhase)(stod(lineParameters[4]));
+			(i->setDCValue)(stod(lineParameters[5]));
+			componentes.push_back(i);
+		}
+		break;
+
+		case 'V': // fonte de corrente independente
+		{
+			string nomeV;
+			VoltageSource *v = new VoltageSource;
+			nomeV = lineParameters[0];
+			(v->addType)(nomeV[0]);
+			nomeV.erase(nomeV.begin()); // remove the first letter, the component identifier
+			(v->setName)(nomeV);
+			(v->addNode)(stoul(lineParameters[1]));
+			(v->addNode)(stoul(lineParameters[2]));
+			for (int i = 1; i < 3; i++)
+				checkNewNode(stoul(lineParameters[i]));
+			(v->setValue)(stod(lineParameters[3]));
+			(v->setPhase)(stod(lineParameters[4]));
+			(v->setDCValue)(stod(lineParameters[5]));
+			SistemaLinear.extraRows += 1;
+			(v->SetExtraPosition)(SistemaLinear.extraRows);
+			componentes.push_back(v);
+		}
+		break;
+		
+
+
 		case 'O':
 		{
 			string nomeO;
@@ -301,6 +307,13 @@ Netlist::Netlist(string netlistPath)
 			componentes.push_back(o);
 		}
 		break;
+
+		case 'M':
+		{
+
+		}
+		break;
+
 		
 		}
      	index++;
@@ -335,9 +348,9 @@ void Netlist::PrintNodes()
 
 
 
-void Netlist::DoConductanceMatrix()
+void Netlist::DoConductanceMatrixDC()
 {
-	PrintNodes();
+	//PrintNodes();
 	SistemaLinear.setRowsValue(GetNumberOfNodes());
 	SistemaLinear.InitializeG_Matrix();
 	double value;
@@ -353,38 +366,26 @@ void Netlist::DoConductanceMatrix()
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
 
 		}
-
-		else if (componentes[count]->getType() == 'G')
+		else if (componentes[count]->getType() == 'L') //funcionando
 		{
-			value = componentes[count]->getValue();
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] += value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(3)] += value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(3)] -= value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(2)] -= value;
-		
-		}
-
-	    else if (componentes[count]->getType() == 'I')
-		{
-			value = componentes[count]->getValue();
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] += value;
-		}
-
-		else if (componentes[count]->getType() == 'V') //funcionando
-		{
-
-			value = static_cast<VoltageSource *>(componentes[count])->getDCValue(); //precisa desse cast para acessar o método da Voltage Source
+			value = DC_RESISTANCE_C;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
-			cout << SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0) << endl;
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
-			cout << value << endl;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
+		}
+		// K
+		else if (componentes[count]->getType() == 'C') //funcionando
+		{
+			value = 1 / DC_RESISTANCE_C;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
 		}
 
-		else if (componentes[count]->getType() == 'E') 
+		else if (componentes[count]->getType() == 'E') //deve funcionar
 		{
 			value = componentes[count]->getValue();
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
@@ -395,8 +396,7 @@ void Netlist::DoConductanceMatrix()
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= value;
 		}
 
-
-		else if (componentes[count]->getType()  == 'F') 
+		else if (componentes[count]->getType() == 'F') //deve funcionar
 		{
 			value = componentes[count]->getValue();
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
@@ -407,7 +407,18 @@ void Netlist::DoConductanceMatrix()
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
 		}
 
-		else if (componentes[count]->getType() == 'H') {
+		else if (componentes[count]->getType() == 'G') //deve funcionar
+		{
+			value = componentes[count]->getValue();
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(3)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(3)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(2)] -= value;
+		
+		}
+
+		else if (componentes[count]->getType() == 'H') //deve funcionar
+		{
 			value = componentes[count]->getValue();
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] += 1;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] -= 1;
@@ -420,6 +431,24 @@ void Netlist::DoConductanceMatrix()
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
 		}
 
+	    else if (componentes[count]->getType() == 'I') //deve funcionar
+		{
+			value = componentes[count]->getValue();
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] += value;
+		}
+
+		else if (componentes[count]->getType() == 'V') //funcionando
+		{
+
+			value = static_cast<VoltageSource *>(componentes[count])->getDCValue(); //precisa desse cast para acessar o método da Voltage Source
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
+		}
+
 		else if (componentes[count]->getType() == 'O') //funcionando
 		{
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
@@ -428,12 +457,128 @@ void Netlist::DoConductanceMatrix()
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= 1;
 		}
 
-
+	// M
     
 	}
 	
 
 }
+
+void Netlist::DoConductanceMatrixAC()
+{
+	SistemaLinear.ResetG_Matrix();
+	SistemaLinear.InitializeG_Matrix();
+	double value;
+
+	for (unsigned count = 0; count < componentes.size(); count++)
+	{
+		if (componentes[count]->getType() == 'R') 
+		{
+			value = 1 / (componentes[count]->getValue());
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
+
+		}
+		else if (componentes[count]->getType() == 'L') //MUDAR
+		{
+			value = (componentes[count]->getValue())*frequency; //falta colocar o J
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
+		}
+		// K
+		else if (componentes[count]->getType() == 'C') //MUDAR
+		{
+			value = 1 / DC_RESISTANCE_C;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
+		}
+
+		else if (componentes[count]->getType() == 'E')
+		{
+			value = componentes[count]->getValue();
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += value;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= value;
+		}
+
+		else if (componentes[count]->getType() == 'F')
+		{
+			value = componentes[count]->getValue();
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(3)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
+		}
+
+		else if (componentes[count]->getType() == 'G')
+		{
+			value = componentes[count]->getValue();
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(3)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(3)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(2)] -= value;
+
+		}
+
+		else if (componentes[count]->getType() == 'H') 
+		{
+			value = componentes[count]->getValue();
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] -= 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(3)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(1)] += 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
+		}
+
+		else if (componentes[count]->getType() == 'I') //MUDAR
+		{
+			value = componentes[count]->getValue();
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] += value;
+		}
+
+		else if (componentes[count]->getType() == 'V') //MUDAR
+		{
+
+			value = static_cast<VoltageSource *>(componentes[count])->getDCValue(); //precisa desse cast para acessar o método da Voltage Source
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
+		}
+
+		else if (componentes[count]->getType() == 'O') 
+		{
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += 1;
+			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= 1;
+		}
+
+		// M
+
+	}
+
+
+}
+
 
 
 
