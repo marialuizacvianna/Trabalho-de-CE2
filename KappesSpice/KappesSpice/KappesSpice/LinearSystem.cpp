@@ -127,8 +127,11 @@ void LinearSystem::SolveLinearSystem()
 
 void LinearSystem::PrintVariables()
 {
-	for (int i = 0; i < (rows + extraRows); i++)
-		cout << variables[i];
+	int i = 1;
+	for (; i < rows; i++)
+		cout << variables[i] - variables[0] <<endl; //colocando 0 zero como referencia, sao tensoes
+	for (; i < (rows + extraRows); i++)
+		cout << variables[i] << endl;// sao correntes
 	cout << endl;
 
 }
