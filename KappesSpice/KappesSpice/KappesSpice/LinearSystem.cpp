@@ -156,3 +156,8 @@ void LinearSystem::ResetG_Matrix()
 			G_Matrix[i][j] = 0;
 
 }
+
+void LinearSystem::NewtonRaphson()
+{
+
+}

@@ -310,7 +310,29 @@ Netlist::Netlist(string netlistPath)
 
 		case 'M':
 		{
-
+			string nomeM;
+			Mosfet *m = new Mosfet;
+			nomeM = lineParameters[0];
+			(m->addType)(nomeM[0]);
+			nomeM.erase(nomeM.begin()); // remove the first letter, the component identifier
+			(m->setName)(nomeM);
+			(m->addNode)(stoul(lineParameters[1])); //drain
+			(m->addNode)(stoul(lineParameters[2])); //gate
+			(m->addNode)(stoul(lineParameters[3])); //source
+			(m->addNode)(stoul(lineParameters[4])); //bulk
+			for (int i = 1; i < 5; i++)
+				checkNewNode(stoul(lineParameters[i]));
+			(m->mosType) = (lineParameters[5][0]);
+			(m->comprimento) = stoul(lineParameters[6]);
+			(m->largura) = stoul(lineParameters[7]);
+			(m->k) = stoul(lineParameters[8]);
+			(m->Vt0) = stoul(lineParameters[9]);
+			(m->lambda) = stoul(lineParameters[10]);
+			(m->gamma) = stoul(lineParameters[11]);
+			(m->phi) = stoul(lineParameters[12]);
+			(m->Ld) = stoul(lineParameters[13]);
+			(m->inverteu) = false;
+			componentes.push_back(m);
 		}
 		break;
 
@@ -456,8 +478,37 @@ void Netlist::DoConductanceMatrixDC()
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += 1;
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= 1;
 		}
+		else if (componentes[count]->getType() == 'M')
+		{
+			float gmb = static_cast<Mosfet *>(componentes[count])->Gmb;
+			float gm = static_cast<Mosfet *>(componentes[count])->Gm;
+			float i = static_cast<Mosfet *>(componentes[count])->I0;
 
-	// M
+			//first transconductance
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(3)] += gmb;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += gmb;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= gmb;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][componentes[count]->getNode(3)] -= gmb;
+			//second transconductance
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(1)] += gm;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += gm;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= gm;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][componentes[count]->getNode(1)] -= gm;
+			//I0
+			if(static_cast<Mosfet *>(componentes[count])->mosType == 'N' )
+			{ 
+				SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= i;
+				SistemaLinear.G_Matrix[componentes[count]->getNode(2)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] += i;
+			}
+			else
+			{
+				SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] += i;
+				SistemaLinear.G_Matrix[componentes[count]->getNode(2)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= i;
+			}
+
+
+
+		}
     
 	}
 	

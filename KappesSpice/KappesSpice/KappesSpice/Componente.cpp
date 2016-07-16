@@ -161,3 +161,113 @@ double Transformador:: getValueM()
 	{
 		extraPosition.push_back(position);
 	}
+
+	void Mosfet::setPolarization()
+	{
+		unsigned auxiliarNode;
+
+		if (mosType == 'N')
+		{
+			if (VS > VD)
+			{
+				auxiliarNode = nodes[0];
+				nodes[0] = nodes[2];
+				nodes[2] = auxiliarNode;
+				inverteu = !inverteu;
+			}
+		}
+		else
+		{
+			if (VS < VD)
+			{
+				auxiliarNode = nodes[0];
+				nodes[0] = nodes[2];
+				nodes[2] = auxiliarNode;
+				inverteu = !inverteu;
+			}
+		}
+
+		VDS = VD - VS;
+		VGS = VG - VS;
+		VBS = VB - VS;
+		VT = Vt0 + gamma*(sqrt(phi - VBS) - sqrt(phi));
+
+
+	}
+
+	void Mosfet::setLinearParameters()
+	{
+		if (mosType = 'N')
+		{
+			if (VBS > phi / 2)
+				VBSaux = phi / 2;
+			else
+				VBSaux = VBS;
+
+			if (VGS < VT) //corte
+			{
+				Gds = Gm = Gmb = ID = I0 = 0;
+				CGS = CGD = ((2 * k / 0.05)*largura*Ld);
+				CBG = ((2 * k / 0.05)*comprimento*largura);
+			}
+			else if (VDS <= (VGS - VT)) //triodo
+			{
+				Gds = ((k*largura / comprimento)*(2 * (VGS - VT) - 2 * VDS + 4 *lambda*VDS*(VGS - VT) - 3 *lambda*(VDS*VDS)));
+				Gm = ((k*largura / comprimento)*(2 * VDS*(1 + lambda*VDS)));
+				Gmb = ((Gm*gamma) / (2 * sqrt(phi - VBSaux)));
+				ID = ((k*largura / comprimento)*(2 * (VGS - VT)*VDS - (VDS*VDS))*(1 + lambda*VDS));
+				I0 = ID - Gm*VGS - Gmb*VBSaux - Gds*VDS;	
+				CGS = CGD = (((2 * k / 0.05)*largura*Ld) + ((k / 0.05)*comprimento*largura));
+				CBG = 0;
+			}
+			else //ativo
+			{
+				Gds = ((k*largura / comprimento)*((VGS - VT)*(VGS - VT)*lambda));
+				Gm = ((k*largura / comprimento)*(2 * (VGS - VT)*(1 + lambda*VDS)));
+				Gmb = ((Gm*gamma) / (2 * sqrt(phi - VBSaux)));
+				ID = ((k*largura / comprimento)*((VGS - VT)*(VGS - VT))*(1 + lambda*VDS));
+				I0 = ID - Gm*VGS - Gmb*VBSaux - Gds*VDS;
+				CGS = (((2*k / 0.05)*largura*Ld) + ((4*k / 0.15)*comprimento*largura));
+				CGD = ((2*k / 0.05)*largura*Ld);
+				CBG = 0;
+			}
+
+		}
+		else //tipo P
+		{
+			if ( (-VBS) > phi / 2)
+				VBSaux = (-phi) / 2;
+			else
+				VBSaux = VBS;
+
+			if (VGS>(-VT)) //corte 
+			{
+				Gds = Gm = Gmb = I0 = ID = 0;
+				CGS = CGD = ((2*k / 0.02)*largura*Ld);
+				CBG = ((2*k / 0.02)*comprimento*largura);
+			}
+			else if ((-VDS) <= (-VGS - VT)) //triodo
+			{
+				Gds = ((k*largura / comprimento)*(2 * (-VGS - VT) - 2 * (-VDS) + 4 * lambda*(-VDS)*(-VGS - VT) - 3 * lambda*(VDS*VDS)));
+				Gm = ((k*largura / comprimento)*(2 * (-VDS)*(1 + lambda*(-VDS))));
+				Gmb = ((Gm*gamma) / (2 * sqrt(phi - VBSaux)));
+				ID = ((k*largura / comprimento)*(2 * (-VGS - VT)*(-VDS) - (VDS*VDS))*(1 + lambda*(-VDS)));
+				I0 = ID + Gm*VGS + Gmb*VBSaux + Gds*VDS;	
+				CGS = CGD = (((2*k / 0.02)*largura*Ld) + ((k / 0.02)*comprimento*largura));
+				CBG = 0;
+			}
+			else //ativo
+			{
+				Gds = ((k*largura / comprimento)*((-VGS - VT)*(-VGS - VT)*lambda));
+				Gm = ((k*largura / comprimento)*(2 * (-VGS - VT)*(1 + lambda*(-VDS))));
+				Gmb = ((Gm*gamma) / (2 * sqrt(phi - VBSaux)));
+				ID = ((k*largura / comprimento)*((-VGS - VT)*(-VGS - VT))*(1 + lambda*(-VDS)));
+				I0 = ID + Gm*VGS + Gmb*VBSaux + Gds*VDS;
+				CGS = (((2*k / 0.02)*largura*Ld) + ((4*k / 0.06)*comprimento*largura));
+				CGD = ((2*k / 0.02)*largura*Ld);
+				CBG = 0;
+			}
+
+
+		}
+	}

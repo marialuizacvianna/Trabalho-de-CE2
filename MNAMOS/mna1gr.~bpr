@@ -5,7 +5,7 @@
     <VERSION value="BCB.06.00"/>
     <PROJECT value="mna1gr.exe"/>
     <OBJFILES value="mna1gr.obj mna1gr1.obj menuavancado.obj"/>
-    <RESFILES value="mna1gr.res"/>
+    <RESFILES value="mna1gr.res resource.res"/>
     <IDLFILES value=""/>
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES) mna1gr1.dfm menuavancado.dfm"/>
@@ -54,6 +54,7 @@
       <FILE FILENAME="mna1gr.cpp" FORMNAME="" UNITNAME="mna1gr" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="mna1gr1.cpp" FORMNAME="Form1" UNITNAME="mna1gr1" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="menuavancado.cpp" FORMNAME="Form2" UNITNAME="menuavancado" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="resource.rc" FORMNAME="" UNITNAME="resource.rc" CONTAINERID="RCCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>

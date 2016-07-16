@@ -22,6 +22,7 @@ class LinearSystem
 		void PrintVariables();
 		void SaveDC_Matrix();
 		void ResetG_Matrix();
+		void NewtonRaphson();
 		double ** G_Matrix;
 		double ** DC_Matrix;
 		int extraRows;

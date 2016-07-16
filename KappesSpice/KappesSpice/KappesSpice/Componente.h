@@ -111,11 +111,41 @@ class VoltageSrcCntrlCurrent: public Componente {
 };
 
 class Mosfet: public Componente {
-private:
-	double gamma, //bulk threshold parameter
-			phi, //surface potential
-			lambda, //channel length modulation
-			comprimento, largura,
-			k; //transcondutance parameter
+public:
+	void setPolarization();
+	void setLinearParameters();
+	char mosType;
+
+	float comprimento,
+		  largura,
+		  k,
+		  Vt0,
+		  lambda, //channel length modulation
+		  gamma, //bulk threshold parameter
+		  phi, //surface potential
+		  Ld; //transcondutance parameter
+
+	float VD, //polarization variables;
+		  VS,
+		  VG,
+		  VB,
+		  VGS,
+		  VDS,
+		  VBS,
+		  VBSaux,
+		  VT,
+		  ID;
+	
+	float I0, //Linear parameters
+		  Gds,
+		  Gm,
+		  Gmb;
+
+	float CGS,  //parasite capacitancies
+		  CGD,
+		  CBG;
+
+	bool inverteu;
+
 
 };
