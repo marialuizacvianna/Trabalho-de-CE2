@@ -323,14 +323,14 @@ Netlist::Netlist(string netlistPath)
 			for (int i = 1; i < 5; i++)
 				checkNewNode(stoul(lineParameters[i]));
 			(m->mosType) = (lineParameters[5][0]);
-			(m->comprimento) = stoul(lineParameters[6]);
-			(m->largura) = stoul(lineParameters[7]);
-			(m->k) = stoul(lineParameters[8]);
-			(m->Vt0) = stoul(lineParameters[9]);
-			(m->lambda) = stoul(lineParameters[10]);
-			(m->gamma) = stoul(lineParameters[11]);
-			(m->phi) = stoul(lineParameters[12]);
-			(m->Ld) = stoul(lineParameters[13]);
+			(m->comprimento) = stof(lineParameters[6]);
+			(m->largura) = stof(lineParameters[7]);
+			(m->k) = stof(lineParameters[8]);
+			(m->Vt0) = stof(lineParameters[9]);
+			(m->lambda) = stof(lineParameters[10]);
+			(m->gamma) = stof(lineParameters[11]);
+			(m->phi) = stof(lineParameters[12]);
+			(m->Ld) = stof(lineParameters[13]);
 			(m->inverteu) = false;
 			componentes.push_back(m);
 		}
@@ -480,16 +480,24 @@ void Netlist::DoConductanceMatrixDC()
 		}
 		else if (componentes[count]->getType() == 'M')
 		{
-			float gmb = static_cast<Mosfet *>(componentes[count])->Gmb;
-			float gm = static_cast<Mosfet *>(componentes[count])->Gm;
-			float i = static_cast<Mosfet *>(componentes[count])->I0;
+			static_cast<Mosfet *>(componentes[count])->setPolarization(SistemaLinear.lastVariables[componentes[count]->getNode(0)],
+																	   SistemaLinear.lastVariables[componentes[count]->getNode(1)],
+																	   SistemaLinear.lastVariables[componentes[count]->getNode(2)],
+																	   SistemaLinear.lastVariables[componentes[count]->getNode(3)]);
 
-			//first transconductance
+			static_cast<Mosfet *>(componentes[count])->setLinearParameters();
+
+			double gmb = static_cast<Mosfet *>(componentes[count])->Gmb;
+			double gm = static_cast<Mosfet *>(componentes[count])->Gm;
+			double i = static_cast<Mosfet *>(componentes[count])->I0;
+			double gds = static_cast<Mosfet *>(componentes[count])->Gds;
+
+			//Gmb transconductance
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(3)] += gmb;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += gmb;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= gmb;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][componentes[count]->getNode(3)] -= gmb;
-			//second transconductance
+			//Gm transconductance
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(1)] += gm;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += gm;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= gm;
@@ -505,6 +513,31 @@ void Netlist::DoConductanceMatrixDC()
 				SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] += i;
 				SistemaLinear.G_Matrix[componentes[count]->getNode(2)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= i;
 			}
+			// GDS conductance
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += gds;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += gds;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= gds;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][componentes[count]->getNode(0)] -= gds;
+
+			
+			value = 1 / DC_RESISTANCE_C;
+			//CGD
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
+
+			//CGS
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(2)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][componentes[count]->getNode(1)] -= value;
+
+			//CBG
+			SistemaLinear.G_Matrix[componentes[count]->getNode(3)][componentes[count]->getNode(3)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(3)] -= value;
+			SistemaLinear.G_Matrix[componentes[count]->getNode(3)][componentes[count]->getNode(1)] -= value;
 
 
 

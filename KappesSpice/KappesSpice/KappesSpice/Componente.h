@@ -112,7 +112,7 @@ class VoltageSrcCntrlCurrent: public Componente {
 
 class Mosfet: public Componente {
 public:
-	void setPolarization();
+	void setPolarization(double Vdrain, double Vgate,double Vsource, double Vbulk);
 	void setLinearParameters();
 	char mosType;
 
@@ -125,7 +125,7 @@ public:
 		  phi, //surface potential
 		  Ld; //transcondutance parameter
 
-	float VD, //polarization variables;
+	double VD, //polarization variables;
 		  VS,
 		  VG,
 		  VB,
@@ -136,12 +136,12 @@ public:
 		  VT,
 		  ID;
 	
-	float I0, //Linear parameters
+	double I0, //Linear parameters
 		  Gds,
 		  Gm,
 		  Gmb;
 
-	float CGS,  //parasite capacitancies
+	double CGS,  //parasite capacitancies
 		  CGD,
 		  CBG;
 

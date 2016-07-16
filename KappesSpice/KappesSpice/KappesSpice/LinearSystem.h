@@ -8,6 +8,10 @@
 #include <sstream>
 #include <vector>
 #include "Componente.h"
+
+#define NR_TOLERANCE    1e-3
+#define NR_ATTEMPTS  50
+
 using namespace std;
 
 class LinearSystem
@@ -26,7 +30,11 @@ class LinearSystem
 		double ** G_Matrix;
 		double ** DC_Matrix;
 		int extraRows;
+		vector<double> lastVariables;
 	private:
 		int rows;
 		vector<double> variables;
+		vector<double> error;
+		unsigned NewtonRaphsonIterations;
+
 };

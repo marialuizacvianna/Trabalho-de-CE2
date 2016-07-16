@@ -162,17 +162,26 @@ double Transformador:: getValueM()
 		extraPosition.push_back(position);
 	}
 
-	void Mosfet::setPolarization()
+	void Mosfet::setPolarization(double Vdrain, double Vgate, double Vsource, double Vbulk)
 	{
 		unsigned auxiliarNode;
+		double auxiliarV;
+
+		VD = Vdrain;
+		VG = Vgate;
+		VS = Vsource;
+		VB = Vbulk;
 
 		if (mosType == 'N')
 		{
 			if (VS > VD)
 			{
 				auxiliarNode = nodes[0];
-				nodes[0] = nodes[2];
+				nodes[0] = nodes[2];	
 				nodes[2] = auxiliarNode;
+				auxiliarV = VD;
+				VD = VS;
+				VS = auxiliarV;
 				inverteu = !inverteu;
 			}
 		}
@@ -183,6 +192,9 @@ double Transformador:: getValueM()
 				auxiliarNode = nodes[0];
 				nodes[0] = nodes[2];
 				nodes[2] = auxiliarNode;
+				auxiliarV = VD;
+				VD = VS;
+				VS = auxiliarV;
 				inverteu = !inverteu;
 			}
 		}

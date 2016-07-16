@@ -1,22 +1,7 @@
-﻿  netlist.cpp
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\netlist.cpp(326): warning C4244: '=': conversion from 'unsigned long' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\netlist.cpp(327): warning C4244: '=': conversion from 'unsigned long' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\netlist.cpp(328): warning C4244: '=': conversion from 'unsigned long' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\netlist.cpp(329): warning C4244: '=': conversion from 'unsigned long' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\netlist.cpp(330): warning C4244: '=': conversion from 'unsigned long' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\netlist.cpp(331): warning C4244: '=': conversion from 'unsigned long' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\netlist.cpp(332): warning C4244: '=': conversion from 'unsigned long' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\netlist.cpp(333): warning C4244: '=': conversion from 'unsigned long' to 'float', possible loss of data
+﻿cl : Command line warning D9028: minimal rebuild failure, reverting to normal build
   Componente.cpp
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\componente.cpp(210): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\componente.cpp(211): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\componente.cpp(220): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\componente.cpp(230): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\componente.cpp(231): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\componente.cpp(246): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\componente.cpp(247): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\componente.cpp(256): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\componente.cpp(266): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\componente.cpp(267): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  LinearSystem.cpp
+  NetlistReadingProgram.cpp
+  netlist.cpp
   Generating Code...
   KappesSpice.vcxproj -> C:\Trabalho-de-CE2\KappesSpice\KappesSpice\Debug\KappesSpice.exe

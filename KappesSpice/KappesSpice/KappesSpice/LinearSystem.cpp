@@ -14,9 +14,13 @@ void LinearSystem::InitializeG_Matrix()
 	G_Matrix = new double*[(rows+extraRows)]; //Creating the rows, a array of pointers to double.
 	for (int i = 0; i < (rows+ extraRows); i++)
 		G_Matrix[i] = new double[(rows+ extraRows) + 1]; //Creating the columns, the array of double
-	for (int i = 0; i < (rows + extraRows); i++)
+	for (int i = 0; i < (rows + extraRows); i++) //reseting G_Matrix and lastVariables
 		for (int j = 0; j < (rows + extraRows) + 1; j++)
+		{ 
 			G_Matrix[i][j] = 0;
+			lastVariables[j] = 0;
+		}
+			
 }
 
 void LinearSystem::PrintG_Matrix()
@@ -159,5 +163,5 @@ void LinearSystem::ResetG_Matrix()
 
 void LinearSystem::NewtonRaphson()
 {
-
+	
 }
