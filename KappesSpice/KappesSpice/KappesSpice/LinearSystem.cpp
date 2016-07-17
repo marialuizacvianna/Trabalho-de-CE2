@@ -10,7 +10,7 @@
 #include <cmath>
 #include "LinearSystem.h"
 
-#define PRINT_WIDTH 5
+#define PRINT_WIDTH 5		
 
 using namespace std;
 
@@ -22,13 +22,13 @@ void LinearSystem::InitializeG_Matrix()
 	for (int i = 0; i < (rows+ extraRows); i++)
 		G_Matrix[i] = new double[(rows+ extraRows) + 1]; //Creating the columns, the array of double
 	for (int i = 0; i < (rows + extraRows); i++) //reseting G_Matrix and lastVariables
+	{
+		lastVariables.push_back(0.1);
+		variables.push_back(0);
+		error.push_back(0);
 		for (int j = 0; j < (rows + extraRows) + 1; j++)
-		{ 
 			G_Matrix[i][j] = 0;
-			lastVariables.push_back(0.1);
-			error.push_back(0);
-		}
-			
+	}
 }
 
 void LinearSystem::PrintG_Matrix()
@@ -52,41 +52,6 @@ void LinearSystem::PrintG_Matrix()
 	cout << endl;
 }
 
-/*void LinearSystem::setRowsValue(vector <Componente *> componentes)
-{
-	vector<unsigned> nosNaoRepetidos;
-	unsigned count = 0;
-	unsigned extraPosition = 0;
-
-	while (count != sizeof(componentes) - 1)
-	{
-		rows = 0;
-
-		if (componentes[count]->getType() == 'H')
-			extraRows += 2; //essa informacao já foi contada no metodo que le a netlist
-		
-		for (unsigned i = 0; i < (componentes[count]->getNumberOfNodes()); i++)
-		{
-			unsigned repetido = 0;
-			if (count != 0)
-			{
-				
-				for (unsigned x = 0; x < sizeof(nosNaoRepetidos); x++)
-				{
-					if ((componentes[count]->getNode(i)) == nosNaoRepetidos[x])
-						repetido = 1;
-				}
-			}
-
-			if (repetido == 0)
-				nosNaoRepetidos.push_back(componentes[count]->getNode(i));
-		}
-
-		count += 1;
-	}
-
-	rows = sizeof(nosNaoRepetidos) ;
-}*/
 
 void LinearSystem::setRowsValue(unsigned numberOfnodes)
 {
@@ -159,6 +124,7 @@ void LinearSystem::SaveDC()
 	for (unsigned i = 0; i < variables.size();i++)
 		DCvariables.push_back(variables[i]);
 }
+
 void LinearSystem::ResetG_Matrix()
 {
 	for (int i = 0; i < (rows + extraRows); i++)

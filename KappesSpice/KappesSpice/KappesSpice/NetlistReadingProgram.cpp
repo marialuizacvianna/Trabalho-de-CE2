@@ -13,14 +13,14 @@ int main(int argc, char* argv[])
 
 
 	//const char* netlistPath = "C:\\Trabalho-de-CE2\\simples.net";
-	const char* netlistPath = "..\\..\\..\\netlists de teste\\simples.net";
+	const char* netlistPath = "..\\..\\..\\netlists de teste\\mosfet.net";
 	Netlist netlist(netlistPath);
 	cout << "FEZ NETLIST" << endl;
 	netlist.SistemaLinear.setRowsValue(netlist.GetNumberOfNodes());
 	netlist.SistemaLinear.InitializeG_Matrix();
-	netlist.DoConductanceMatrixDC();
-	cout << "FEZ A MATRIZ" << endl;
-	netlist.SistemaLinear.PrintG_Matrix();
+	//netlist.DoConductanceMatrixDC();
+	//cout << "FEZ A MATRIZ" << endl;
+	//netlist.SistemaLinear.PrintG_Matrix();
 	netlist.NewtonRaphson();
 	cout << "RESOLVEU O SISTEMA" << endl;
 	netlist.SistemaLinear.PrintG_Matrix();

@@ -114,6 +114,7 @@ class Mosfet: public Componente {
 public:
 	void setPolarization(double Vdrain, double Vgate,double Vsource, double Vbulk);
 	void setLinearParameters();
+	void printConditions();
 	char mosType;
 
 	float comprimento,

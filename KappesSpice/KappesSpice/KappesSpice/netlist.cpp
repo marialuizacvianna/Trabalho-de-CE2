@@ -342,8 +342,8 @@ Netlist::Netlist(string netlistPath)
 			for (int i = 1; i < 5; i++)
 				checkNewNode(stoul(lineParameters[i]));
 			(m->mosType) = (lineParameters[5][0]);
-			(m->comprimento) = stof(lineParameters[6]);
-			(m->largura) = stof(lineParameters[7]);
+			(m->comprimento) = stof(lineParameters[6].substr(2)); //we need to remove 'L='
+			(m->largura) = stof(lineParameters[7].substr(2));//we need to remove 'W='
 			(m->k) = stof(lineParameters[8]);
 			(m->Vt0) = stof(lineParameters[9]);
 			(m->lambda) = stof(lineParameters[10]);
@@ -571,8 +571,8 @@ void Netlist::DoConductanceMatrixDC()
 
 		}
 
-		//SistemaLinear.PrintG_Matrix();
-		//system("pause");
+		SistemaLinear.PrintG_Matrix();
+		system("pause");
     
 	}
 	
@@ -698,18 +698,26 @@ void Netlist::NewtonRaphson()
 {
 	unsigned attempts = 0;
 	convergiu = false;
+	cout << "LAST VARIABLES" << endl;
+	for (unsigned i = 1; i < SistemaLinear.lastVariables.size(); i++)
+		cout << SistemaLinear.lastVariables[i]<<endl;
+
+
 	while (attempts < NR_ATTEMPTS && !convergiu)
 	{
+		NewtonRaphsonPrint();
 		for (int i = 0; (i < 40 && !convergiu); i++)
 		{
 			DoConductanceMatrixDC();
 			SistemaLinear.SolveLinearSystem();
 			NewtonRaphsonError();
+			NewtonRaphsonPrint();
 			if (fabs(SistemaLinear.maxError) < NR_TOLERANCE)
 			{
 				convergiu = true;
 			}
 			SistemaLinear.lastVariables = SistemaLinear.variables;
+			SistemaLinear.lastVariables[0] = 0;
 		}
 		if (!convergiu) //randomize lastVariables
 		{
@@ -754,7 +762,21 @@ void Netlist::NewtonRaphsonRandomizeVariables() //only randomize the big errors
 		if (fabs(SistemaLinear.error[i]) > NR_TOLERANCE)
 			SistemaLinear.lastVariables[i] = (((rand() % 200) / 100.0) - 1);
 }
+void Netlist::NewtonRaphsonPrint()
+{
+	for (unsigned i = 1; i < SistemaLinear.variables.size(); i++)
+	{
+		cout << "Tensao ";
+		cout << i;
+		cout << ": ";
+		cout << SistemaLinear.variables[i];
+		cout << "	";
+		cout << SistemaLinear.lastVariables[i];
+		cout << "	";
+		cout << SistemaLinear.error[i] << endl;
+	}
 
+}
 
 void Netlist::ACSweep()
 {

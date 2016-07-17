@@ -284,4 +284,30 @@ double Transformador:: getValueM()
 
 
 		}
+
+		printConditions();
+	}
+	void Mosfet::printConditions()
+	{
+		cout << "M";
+		cout << getName();
+		cout << mosType	;
+		cout << "Gm: ";
+		cout << Gm ;
+		cout << "Gds: ";
+		cout << Gds ;
+		cout << "Gmb: ";
+		cout << Gmb ;
+		cout << "Cgs: ";
+		cout << CGS ;
+		cout << "Cgd: ";
+		cout << CGD ;
+		cout << "Cbg: ";
+		cout << CBG ;
+		cout << "VGS: ";
+		cout << VGS ;
+		cout << "VDS: ";
+		cout << VDS ;
+		cout << "ID: ";
+		cout << ID << endl;
 	}

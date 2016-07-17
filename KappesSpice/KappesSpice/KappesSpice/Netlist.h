@@ -36,6 +36,7 @@ public:
 	void NewtonRaphson();
 	void NewtonRaphsonError();
 	void NewtonRaphsonRandomizeVariables();
+	void NewtonRaphsonPrint();
 	void ACSweep();
 	LinearSystem SistemaLinear;
 	ACParameters ParametrosAC;
