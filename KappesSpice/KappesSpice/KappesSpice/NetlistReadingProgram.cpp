@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 	//netlist.SistemaLinear.PrintG_Matrix();
 	netlist.NewtonRaphson();
 	cout << "RESOLVEU O SISTEMA" << endl;
-	netlist.SistemaLinear.PrintG_Matrix();
+	//netlist.SistemaLinear.PrintG_Matrix();
 	netlist.SistemaLinear.PrintVariables();
 	system("pause");
 

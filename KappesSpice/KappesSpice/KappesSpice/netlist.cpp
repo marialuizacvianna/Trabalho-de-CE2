@@ -571,8 +571,8 @@ void Netlist::DoConductanceMatrixDC()
 
 		}
 
-		SistemaLinear.PrintG_Matrix();
-		system("pause");
+		//SistemaLinear.PrintG_Matrix();
+		//system("pause");
     
 	}
 	
@@ -712,6 +712,7 @@ void Netlist::NewtonRaphson()
 			SistemaLinear.SolveLinearSystem();
 			NewtonRaphsonError();
 			NewtonRaphsonPrint();
+			system("pause");
 			if (fabs(SistemaLinear.maxError) < NR_TOLERANCE)
 			{
 				convergiu = true;
@@ -732,7 +733,7 @@ void Netlist::NewtonRaphsonError()
 {
 	SistemaLinear.maxError = 0;
 
-	for (unsigned i = 0; i < SistemaLinear.variables.size(); i++)
+	for (unsigned i = 1; i < SistemaLinear.variables.size(); i++)
 	{
 		SistemaLinear.error[i] = SistemaLinear.variables[i] - SistemaLinear.lastVariables[i];
 		if (fabs(SistemaLinear.variables[i]) > NR_RELATIVE_ABSOLUTE_TRESHOLD)
@@ -746,7 +747,7 @@ void Netlist::NewtonRaphsonError()
 		else
 			if (fabs(SistemaLinear.error[i]) > fabs(SistemaLinear.maxError))
 				SistemaLinear.maxError = SistemaLinear.error[i];
-
+		//cout << "maxError: " << SistemaLinear.maxError << endl;
 
 	}
 
@@ -775,6 +776,7 @@ void Netlist::NewtonRaphsonPrint()
 		cout << "	";
 		cout << SistemaLinear.error[i] << endl;
 	}
+	
 
 }
 

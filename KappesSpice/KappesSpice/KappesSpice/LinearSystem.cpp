@@ -58,7 +58,7 @@ void LinearSystem::setRowsValue(unsigned numberOfnodes)
 	rows = numberOfnodes;
 }
 
-void LinearSystem::SolveLinearSystem()
+/*void LinearSystem::SolveLinearSystem()
 {
 	int n = (rows + extraRows);
 	for (int i = 0; i<n; i++) {
@@ -103,15 +103,61 @@ void LinearSystem::SolveLinearSystem()
 	}
 	this->variables = x;
 
+}*/
+
+
+int LinearSystem::SolveLinearSystem()
+{
+	int i, j, l, a;
+	double t, p;
+	int nv = (rows + extraRows - 1);
+
+	for (i = 1; i <= nv ; i++) {
+		t = 0.0;
+		a = i;
+		for (l = i; l <= nv; l++) {
+			if (fabs(G_Matrix[l][i])>fabs(t)) {
+				a = l;
+				t = G_Matrix[l][i];
+			}
+		}
+		if (i != a) {
+			for (l = 1; l <= nv + 1; l++) {
+				p = G_Matrix[i][l];
+				G_Matrix[i][l] = G_Matrix[a][l];
+				G_Matrix[a][l] = p;
+			}
+		}
+		if (fabs(t)<TOLG) {
+			cout << "Sistema singular" << endl;
+			return 1;
+		}
+		for (j = nv + 1; j>0; j--) {  /* Basta j>i em vez de j>0 */
+			G_Matrix[i][j] = G_Matrix[i][j]/t;
+			p = G_Matrix[i][j];
+			if (p != 0)  /* Evita operacoes com zero */
+				for (l = 1; l <= nv; l++) {
+					if (l != i)
+						G_Matrix[l][j] -= G_Matrix[l][i] * p;
+				}
+		}
+	}
+	
+	for (i = 0; i <=nv ;i++)
+		this->variables[i] = G_Matrix[i][nv + 1];
+	return 0;
 }
+
+
+
 
 void LinearSystem::PrintVariables()
 {
 	int i = 1;
 	for (; i < rows; i++)
-		cout << variables[i] - variables[0] <<endl; //colocando 0 zero como referencia, sao tensoes
+		cout << "Tensao "<< i <<": " << variables[i] <<endl; 
 	for (; i < (rows + extraRows); i++)
-		cout << variables[i] << endl;// sao correntes
+		cout <<  "Corrente " << i << ": " << variables[i] << endl;
 	cout << endl;
 
 }
