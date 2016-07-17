@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	netlist.DoConductanceMatrixDC();
 	cout << "FEZ A MATRIZ" << endl;
 	netlist.SistemaLinear.PrintG_Matrix();
-	netlist.SistemaLinear.SolveLinearSystem();
+	netlist.NewtonRaphson();
 	cout << "RESOLVEU O SISTEMA" << endl;
 	netlist.SistemaLinear.PrintG_Matrix();
 	netlist.SistemaLinear.PrintVariables();

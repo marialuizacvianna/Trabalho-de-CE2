@@ -9,6 +9,10 @@
 #include "Componente.h"
 #include "LinearSystem.h"
 
+#define NR_TOLERANCE    1e-3
+#define NR_ATTEMPTS  50
+#define NR_RELATIVE_ABSOLUTE_TRESHOLD 1e-6
+
 using namespace std;
 
 class Netlist  
@@ -20,10 +24,16 @@ public:
 	void checkNewNode(unsigned);
 	unsigned GetNumberOfNodes();
 	void PrintNodes();
+	void NewtonRaphson();
+	void NewtonRaphsonError();
+	void NewtonRaphsonRandomizeVariables();
+
 	LinearSystem SistemaLinear;
 private:
 	float frequency;
 	vector<unsigned> netlistNodes;
 	vector <string> netlist;
 	vector <Componente *> componentes;
+	unsigned NewtonRaphsonIterations;
+	bool convergiu;
 };

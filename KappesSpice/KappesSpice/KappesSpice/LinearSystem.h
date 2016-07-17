@@ -9,9 +9,7 @@
 #include <vector>
 #include "Componente.h"
 
-#define NR_TOLERANCE    1e-3
-#define NR_ATTEMPTS  50
-#define NR_RELATIVE_ABSOLUTE_TRESHOLD 1e-6
+
 using namespace std;
 
 class LinearSystem
@@ -26,19 +24,15 @@ class LinearSystem
 		void PrintVariables();
 		void SaveDC_Matrix();
 		void ResetG_Matrix();
-		void NewtonRaphson();
-		void NewtonRaphsonError();
-		void NewtonRaphsonRandomizeVariables();
+
 		double ** G_Matrix;
 		double ** DC_Matrix;
 		int extraRows;
 		vector<double> lastVariables;
-	private:
-		int rows;
 		vector<double> variables;
+		int rows;
 		vector<double> error;
 		double maxError;
-		unsigned NewtonRaphsonIterations;
-		bool convergiu;
+	private:
 
 };

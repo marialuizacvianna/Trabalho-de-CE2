@@ -1,6 +1,8 @@
 ﻿  netlist.cpp
-  NetlistReadingProgram.cpp
   LinearSystem.cpp
+  Generating Code...
+  Compiling...
+  NetlistReadingProgram.cpp
   Generating Code...
   LINK : C:\Trabalho-de-CE2\KappesSpice\KappesSpice\Debug\KappesSpice.exe not found or not built by the last incremental link; performing full link
   KappesSpice.vcxproj -> C:\Trabalho-de-CE2\KappesSpice\KappesSpice\Debug\KappesSpice.exe

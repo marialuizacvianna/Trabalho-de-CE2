@@ -663,5 +663,67 @@ void Netlist::DoConductanceMatrixAC()
 }
 
 
+void Netlist::NewtonRaphson()
+{
+	unsigned attempts = 0;
+	convergiu = false;
+	while (attempts < NR_ATTEMPTS && !convergiu)
+	{
+		for (int i = 0; (i < 40 && !convergiu); i++)
+		{
+			DoConductanceMatrixDC();
+			SistemaLinear.SolveLinearSystem();
+			NewtonRaphsonError();
+			if (fabs(SistemaLinear.maxError) < NR_TOLERANCE)
+			{
+				convergiu = true;
+			}
+			SistemaLinear.lastVariables = SistemaLinear.variables;
+		}
+		if (!convergiu) //randomize lastVariables
+		{
+			attempts++;
+			NewtonRaphsonRandomizeVariables();
+		}
+
+	}
+}
+
+void Netlist::NewtonRaphsonError()
+{
+	SistemaLinear.maxError = 0;
+
+	for (unsigned i = 0; i < SistemaLinear.variables.size(); i++)
+	{
+		SistemaLinear.error[i] = SistemaLinear.variables[i] - SistemaLinear.lastVariables[i];
+		if (fabs(SistemaLinear.variables[i]) > NR_RELATIVE_ABSOLUTE_TRESHOLD)
+		{
+			SistemaLinear.error[i] = fabs(SistemaLinear.error[i]) / SistemaLinear.variables[i];
+
+			if (fabs(SistemaLinear.error[i]) > fabs(SistemaLinear.maxError))
+				SistemaLinear.maxError = SistemaLinear.error[i];
+
+		}
+		else
+			if (fabs(SistemaLinear.error[i]) > fabs(SistemaLinear.maxError))
+				SistemaLinear.maxError = SistemaLinear.error[i];
+
+
+	}
+
+}
+
+void Netlist::NewtonRaphsonRandomizeVariables() //only randomize the big errors
+{
+	int i = 0;
+	for (; i < SistemaLinear.rows; i++) // tensões de -10 a 10
+		if (fabs(SistemaLinear.error[i]) > NR_TOLERANCE)
+			SistemaLinear.lastVariables[i] = (((rand() % 2000) / 100.0) - 10);
+	for (unsigned j = i; j < SistemaLinear.lastVariables.size(); j++) // correntes de - 1 a 1
+		if (fabs(SistemaLinear.error[i]) > NR_TOLERANCE)
+			SistemaLinear.lastVariables[i] = (((rand() % 200) / 100.0) - 1);
+}
+
+
 
 
