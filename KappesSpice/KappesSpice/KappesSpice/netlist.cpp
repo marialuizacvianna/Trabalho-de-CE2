@@ -27,6 +27,7 @@ Netlist::Netlist(string netlistPath)
 	if (!netlistFile)
 	{
 		cout << "Nao foi possivel abrir o arquivo" << endl;
+		system("pause");
 	}
 	cout << "Lendo Netlist : " << netlistPath << endl;
 	getline(netlistFile, linha);
@@ -76,7 +77,7 @@ Netlist::Netlist(string netlistPath)
 			for (int i = 1; i < 3; i++)
 				checkNewNode(stoul(lineParameters[i]));
 			(l->setValue)(stod(lineParameters[3]));
-			(l->setInitialValue)(stod(lineParameters[4]));
+			//(l->setInitialValue)(stod(lineParameters[4])); isso nao existe
 			componentes.push_back(l);
 		}
 		break;
@@ -157,7 +158,7 @@ Netlist::Netlist(string netlistPath)
 			for (int i = 1; i < 3; i++)
 				checkNewNode(stoul(lineParameters[i]));
 			(c->setValue)(stod(lineParameters[3]));
-			(c->setInitialValue)(stod(lineParameters[4]));
+			//(c->setInitialValue)(stod(lineParameters[4])); isso aqui nao existe
 			componentes.push_back(c);
 		}
 		break;
@@ -277,9 +278,22 @@ Netlist::Netlist(string netlistPath)
 			(v->addNode)(stoul(lineParameters[2]));
 			for (int i = 1; i < 3; i++)
 				checkNewNode(stoul(lineParameters[i]));
-			(v->setValue)(stod(lineParameters[3]));
-			(v->setPhase)(stod(lineParameters[4]));
-			(v->setDCValue)(stod(lineParameters[5]));
+
+			
+			if (lineParameters.size() == 6)
+			{
+				(v->setValue)(stod(lineParameters[3]));
+				(v->setPhase)(stod(lineParameters[4]));
+				(v->setDCValue)(stod(lineParameters[5]));
+			}
+			else
+			{
+				(v->setValue)(0);
+				(v->setPhase)(0);
+				(v->setDCValue)(stod(lineParameters[3]));
+			}
+				
+			
 			SistemaLinear.extraRows += 1;
 			(v->SetExtraPosition)(SistemaLinear.extraRows);
 			componentes.push_back(v);
@@ -373,14 +387,14 @@ void Netlist::PrintNodes()
 void Netlist::DoConductanceMatrixDC()
 {
 	//PrintNodes();
-	SistemaLinear.setRowsValue(GetNumberOfNodes());
-	SistemaLinear.InitializeG_Matrix();
+	SistemaLinear.ResetG_Matrix();
 	double value;
 
 	for (unsigned count = 0; count < componentes.size(); count++)
 	{
 		if (componentes[count]->getType() == 'R') //funcionando
 		{
+			//cout << "R" << endl;
 			value = 1/(componentes[count]->getValue());
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
@@ -400,6 +414,7 @@ void Netlist::DoConductanceMatrixDC()
 		// K
 		else if (componentes[count]->getType() == 'C') //funcionando
 		{
+			//cout << "C" << endl;
 			value = 1 / DC_RESISTANCE_C;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
@@ -462,6 +477,7 @@ void Netlist::DoConductanceMatrixDC()
 
 		else if (componentes[count]->getType() == 'V') //funcionando
 		{
+			//cout << "V" << endl;
 			value = static_cast<VoltageSource *>(componentes[count])->getDCValue(); //precisa desse cast para acessar o método da Voltage Source
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
@@ -472,6 +488,7 @@ void Netlist::DoConductanceMatrixDC()
 
 		else if (componentes[count]->getType() == 'O') //funcionando
 		{
+			//cout << "o" << endl;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += 1;
@@ -541,6 +558,9 @@ void Netlist::DoConductanceMatrixDC()
 
 
 		}
+
+		//SistemaLinear.PrintG_Matrix();
+		//system("pause");
     
 	}
 	
@@ -550,7 +570,6 @@ void Netlist::DoConductanceMatrixDC()
 void Netlist::DoConductanceMatrixAC()
 {
 	SistemaLinear.ResetG_Matrix();
-	SistemaLinear.InitializeG_Matrix();
 	double value;
 
 	for (unsigned count = 0; count < componentes.size(); count++)
