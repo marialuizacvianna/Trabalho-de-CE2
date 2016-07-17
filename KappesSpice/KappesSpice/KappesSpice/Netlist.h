@@ -19,7 +19,7 @@ class ACParameters
 {
 public:
 	char stepType; // L for Linear; O for Octal; D for Decade;
-	double steps;
+	double points;
 	double startFrequency;
 	double endFrequency;
 };
@@ -41,7 +41,7 @@ public:
 	LinearSystem SistemaLinear;
 	ACParameters ParametrosAC;
 private:
-	float frequency;
+	double frequency;
 	vector<unsigned> netlistNodes;
 	vector <string> netlist;
 	vector <Componente *> componentes;

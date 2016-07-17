@@ -356,10 +356,14 @@ Netlist::Netlist(string netlistPath)
 		break;
 		case '.':
 		{
-			ParametrosAC.stepType = lineParameters[1][0];
-			ParametrosAC.steps = stof(lineParameters[2]);
-			ParametrosAC.startFrequency = stof(lineParameters[3]);
-			ParametrosAC.endFrequency = stof(lineParameters[4]);
+			if (lineParameters[0] == ".AC")
+			{
+				ParametrosAC.stepType = lineParameters[1][0];
+				ParametrosAC.points = stod(lineParameters[2]);
+				ParametrosAC.startFrequency = stod(lineParameters[3]);
+				ParametrosAC.endFrequency = stod(lineParameters[4]);
+				cout << "entrou" << endl;
+			}
 		}
 
 		
@@ -780,10 +784,58 @@ void Netlist::ACSweep()
 {
 	SistemaLinear.SaveDC();
 	SistemaLinear.InitializeG_MatrixAC();
-	// for inicio ate o final
+	double step;
+
+	if(ParametrosAC.points - 1) //para nao ter divisoes por 0 e travar o programa
+	{
+		if (ParametrosAC.stepType == 'D')
+		{
+			step = pow(10, (1.0 / (ParametrosAC.points - 1)));
+		}
+		else if (ParametrosAC.stepType == 'O')
+		{
+			step = pow(2, (1.0 / (ParametrosAC.points - 1)));
+		}
+		else
+		{
+			step = (ParametrosAC.endFrequency - ParametrosAC.startFrequency) / (ParametrosAC.points - 1);
+		}
+	}
+	else
+	{
+		if (ParametrosAC.stepType == 'D')
+		{
+			step = 10;
+		}
+		else if (ParametrosAC.stepType == 'O')
+		{
+			step = 2;
+		}
+		else
+		{
+			step = (ParametrosAC.endFrequency - ParametrosAC.startFrequency);
+		}
+	}
+
+	frequency = ParametrosAC.startFrequency;
+	while (frequency <= ParametrosAC.endFrequency) {
+		DoConductanceMatrixAC();
+		if (SistemaLinear.SolveLinearSystemC()) {
+			return;
+		}
+		//GravarLinha();
+		if (ParametrosAC.stepType == 'L') {
+			frequency += step;
+		}
+		else {
+			frequency *= step;
+		}
+	}
+
+	// for inicio ate o final frequencia
 	//monta estampa AC
 	//Resolve sistema
 	//salva variaveis
+	//aumenta a frequencia
 
 }
-
