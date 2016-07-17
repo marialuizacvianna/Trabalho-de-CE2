@@ -18,7 +18,8 @@ void LinearSystem::InitializeG_Matrix()
 		for (int j = 0; j < (rows + extraRows) + 1; j++)
 		{ 
 			G_Matrix[i][j] = 0;
-			lastVariables[j] = 0;
+			lastVariables.push_back(0.1);
+			error.push_back(0);
 		}
 			
 }
@@ -163,5 +164,61 @@ void LinearSystem::ResetG_Matrix()
 
 void LinearSystem::NewtonRaphson()
 {
-	
+	unsigned attempts = 0;
+	convergiu = false;
+	while (attempts < NR_ATTEMPTS && !convergiu)
+	{
+		for (int i = 0; (i < 40 && !convergiu); i++)
+		{
+			SolveLinearSystem();
+			NewtonRaphsonError();
+			if (fabs(maxError) < NR_TOLERANCE)
+			{
+				convergiu = true;
+			}
+
+		}
+		if (!convergiu) //randomize lastVariables
+		{
+			attempts++;
+			NewtonRaphsonRandomizeVariables();
+			lastVariables = variables;
+		}
+
+	}
+}
+
+void LinearSystem::NewtonRaphsonError()
+{
+	maxError = 0;
+
+	for (unsigned i = 0; i < variables.size(); i++)
+	{
+		error[i] = variables[i] - lastVariables[i];
+		if (variables[i] > NR_RELATIVE_ABSOLUTE_TRESHOLD)
+		{
+			error[i] = fabs(error[i]) / variables[i];
+
+			if (fabs(error[i]) > fabs(maxError))
+				maxError = error[i];
+
+		}
+		else
+			if (fabs(error[i]) > fabs(maxError))
+				maxError = error[i];
+			
+
+	}
+
+}
+
+void LinearSystem::NewtonRaphsonRandomizeVariables() //only randomize the big errors
+{
+	int i = 0;
+	for (; i < rows; i++) // tensões de -10 a 10
+		if (fabs(error[i]) > NR_TOLERANCE)
+			lastVariables[i] = (((rand() % 2000) / 100.0) - 10);
+	for (unsigned j = i; j < lastVariables.size(); j++) // correntes de - 1 a 1
+		if (fabs(error[i]) > NR_TOLERANCE)
+			lastVariables[i] = (((rand() % 200) / 100.0) - 1);
 }
