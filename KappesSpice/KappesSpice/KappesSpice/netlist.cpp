@@ -63,7 +63,7 @@ Netlist::Netlist(string netlistPath)
 		}
 		break;
 
-		case 'L':
+		case 'L': //nao sei se está correto
 		{
 			string nomeL;
 			Indutor *l = new Indutor;

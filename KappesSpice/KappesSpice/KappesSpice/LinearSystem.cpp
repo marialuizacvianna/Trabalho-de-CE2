@@ -170,19 +170,19 @@ void LinearSystem::NewtonRaphson()
 	{
 		for (int i = 0; (i < 40 && !convergiu); i++)
 		{
+			//está faltando fazer a matriz G
 			SolveLinearSystem();
 			NewtonRaphsonError();
 			if (fabs(maxError) < NR_TOLERANCE)
 			{
 				convergiu = true;
 			}
-
+			lastVariables = variables;
 		}
 		if (!convergiu) //randomize lastVariables
 		{
 			attempts++;
 			NewtonRaphsonRandomizeVariables();
-			lastVariables = variables;
 		}
 
 	}
@@ -195,7 +195,7 @@ void LinearSystem::NewtonRaphsonError()
 	for (unsigned i = 0; i < variables.size(); i++)
 	{
 		error[i] = variables[i] - lastVariables[i];
-		if (variables[i] > NR_RELATIVE_ABSOLUTE_TRESHOLD)
+		if (fabs(variables[i]) > NR_RELATIVE_ABSOLUTE_TRESHOLD)
 		{
 			error[i] = fabs(error[i]) / variables[i];
 
