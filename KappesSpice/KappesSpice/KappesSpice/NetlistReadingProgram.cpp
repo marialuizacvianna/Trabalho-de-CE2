@@ -16,10 +16,10 @@ int main(int argc, char* argv[])
 	const char* netlistPath = "..\\..\\..\\simples.net";
 	Netlist netlist(netlistPath);
 	cout << "FEZ NETLIST" << endl;
-	//netlist.DoConductanceMatrixDC();
+	netlist.DoConductanceMatrixDC();
 	cout << "FEZ A MATRIZ" << endl;
 	netlist.SistemaLinear.PrintG_Matrix();
-	netlist.SistemaLinear.NewtonRaphson();
+	netlist.SistemaLinear.SolveLinearSystem();
 	cout << "RESOLVEU O SISTEMA" << endl;
 	netlist.SistemaLinear.PrintG_Matrix();
 	netlist.SistemaLinear.PrintVariables();
