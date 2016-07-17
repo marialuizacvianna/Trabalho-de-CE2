@@ -170,19 +170,20 @@ void LinearSystem::NewtonRaphson()
 	{
 		for (int i = 0; (i < 40 && !convergiu); i++)
 		{
+			//DoConductanceMatrixDC();
 			SolveLinearSystem();
 			NewtonRaphsonError();
 			if (fabs(maxError) < NR_TOLERANCE)
 			{
 				convergiu = true;
 			}
+			lastVariables = variables;
 
 		}
 		if (!convergiu) //randomize lastVariables
 		{
 			attempts++;
 			NewtonRaphsonRandomizeVariables();
-			lastVariables = variables;
 		}
 
 	}
@@ -195,7 +196,7 @@ void LinearSystem::NewtonRaphsonError()
 	for (unsigned i = 0; i < variables.size(); i++)
 	{
 		error[i] = variables[i] - lastVariables[i];
-		if (variables[i] > NR_RELATIVE_ABSOLUTE_TRESHOLD)
+		if (fabs(variables[i]) > NR_RELATIVE_ABSOLUTE_TRESHOLD)
 		{
 			error[i] = fabs(error[i]) / variables[i];
 
@@ -205,11 +206,8 @@ void LinearSystem::NewtonRaphsonError()
 		}
 		else
 			if (fabs(error[i]) > fabs(maxError))
-				maxError = error[i];
-			
-
+				maxError = error[i];			
 	}
-
 }
 
 void LinearSystem::NewtonRaphsonRandomizeVariables() //only randomize the big errors
@@ -222,3 +220,5 @@ void LinearSystem::NewtonRaphsonRandomizeVariables() //only randomize the big er
 		if (fabs(error[i]) > NR_TOLERANCE)
 			lastVariables[i] = (((rand() % 200) / 100.0) - 1);
 }
+
+

@@ -63,7 +63,7 @@ Netlist::Netlist(string netlistPath)
 		}
 		break;
 
-		case 'L':
+		case 'L': //falta checkar
 		{
 			string nomeL;
 			Indutor *l = new Indutor;
@@ -342,6 +342,9 @@ Netlist::Netlist(string netlistPath)
 	}
 
 	netlistFile.close();
+
+	SistemaLinear.setRowsValue(GetNumberOfNodes());
+	SistemaLinear.InitializeG_Matrix();
 }
 
 void Netlist::checkNewNode(unsigned node)
@@ -373,8 +376,8 @@ void Netlist::PrintNodes()
 void Netlist::DoConductanceMatrixDC()
 {
 	//PrintNodes();
-	SistemaLinear.setRowsValue(GetNumberOfNodes());
-	SistemaLinear.InitializeG_Matrix();
+	SistemaLinear.ResetG_Matrix();
+
 	double value;
 
 	for (unsigned count = 0; count < componentes.size(); count++)
@@ -550,7 +553,6 @@ void Netlist::DoConductanceMatrixDC()
 void Netlist::DoConductanceMatrixAC()
 {
 	SistemaLinear.ResetG_Matrix();
-	SistemaLinear.InitializeG_Matrix();
 	double value;
 
 	for (unsigned count = 0; count < componentes.size(); count++)
