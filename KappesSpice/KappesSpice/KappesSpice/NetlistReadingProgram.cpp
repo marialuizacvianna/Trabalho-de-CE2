@@ -7,7 +7,7 @@
 #include <vector>
 #include "Componente.h"
 #include "Netlist.h"
-
+//TODO: deletar esse comentário
 int main(int argc, char* argv[])
 {
 
