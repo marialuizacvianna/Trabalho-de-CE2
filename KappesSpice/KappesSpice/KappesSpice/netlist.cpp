@@ -5,15 +5,17 @@
 #include <iterator>
 #include <sstream>
 #include <vector>
+#include <complex>
+#include <cmath>
 #include "LinearSystem.h"
 #include "Componente.h"
 #include "Netlist.h"
 
-
+#define I sqrt(-1)
 #define DC_RESISTANCE_C  1e9
 
 using namespace std;
-
+typedef complex<double> dcomp;
 
 Netlist::Netlist(string netlistPath)
 {
@@ -278,19 +280,22 @@ Netlist::Netlist(string netlistPath)
 			(v->addNode)(stoul(lineParameters[2]));
 			for (int i = 1; i < 3; i++)
 				checkNewNode(stoul(lineParameters[i]));
-
+			(v->setValue)(stod(lineParameters[3]));
 			
-			if (lineParameters.size() == 6)
+			if (lineParameters.size() == 6) //algumas netlists nao colocam todos os termos. Precisamos tratar
 			{
-				(v->setValue)(stod(lineParameters[3]));
 				(v->setPhase)(stod(lineParameters[4]));
 				(v->setDCValue)(stod(lineParameters[5]));
 			}
+			else if (lineParameters.size() == 5)
+			{
+				(v->setPhase)(stod(lineParameters[4]));
+				(v->setDCValue)(0);
+			}
 			else
 			{
-				(v->setValue)(0);
 				(v->setPhase)(0);
-				(v->setDCValue)(stod(lineParameters[3]));
+				(v->setDCValue)(0);
 			}
 				
 			
@@ -349,6 +354,13 @@ Netlist::Netlist(string netlistPath)
 			componentes.push_back(m);
 		}
 		break;
+		case '.':
+		{
+			ParametrosAC.stepType = lineParameters[1][0];
+			ParametrosAC.steps = stof(lineParameters[2]);
+			ParametrosAC.startFrequency = stof(lineParameters[3]);
+			ParametrosAC.endFrequency = stof(lineParameters[4]);
+		}
 
 		
 		}
@@ -402,7 +414,7 @@ void Netlist::DoConductanceMatrixDC()
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
 
 		}
-		else if (componentes[count]->getType() == 'L') //funcionando
+		else if (componentes[count]->getType() == 'L') //deve funcionar
 		{
 			value = DC_RESISTANCE_C;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
@@ -494,7 +506,7 @@ void Netlist::DoConductanceMatrixDC()
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += 1;
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= 1;
 		}
-		else if (componentes[count]->getType() == 'M')
+		else if (componentes[count]->getType() == 'M') //deve funcionar se deus quiser
 		{
 			static_cast<Mosfet *>(componentes[count])->setPolarization(SistemaLinear.lastVariables[componentes[count]->getNode(0)],
 																	   SistemaLinear.lastVariables[componentes[count]->getNode(1)],
@@ -569,109 +581,109 @@ void Netlist::DoConductanceMatrixDC()
 
 void Netlist::DoConductanceMatrixAC()
 {
-	SistemaLinear.ResetG_Matrix();
-	double value;
+	SistemaLinear.ResetG_MatrixAC();
+	dcomp value;
 
 	for (unsigned count = 0; count < componentes.size(); count++)
 	{
 		if (componentes[count]->getType() == 'R') 
 		{
 			value = 1 / (componentes[count]->getValue());
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
 
 		}
 		else if (componentes[count]->getType() == 'L') //MUDAR
 		{
 			value = (componentes[count]->getValue())*frequency; //falta colocar o J
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
 		}
 		// K
 		else if (componentes[count]->getType() == 'C') //MUDAR
 		{
 			value = 1 / DC_RESISTANCE_C;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
 		}
 
 		else if (componentes[count]->getType() == 'E')
 		{
 			value = componentes[count]->getValue();
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += value;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += value;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= value;
 		}
 
 		else if (componentes[count]->getType() == 'F')
 		{
 			value = componentes[count]->getValue();
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(3)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(3)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] -= 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
 		}
 
 		else if (componentes[count]->getType() == 'G')
 		{
 			value = componentes[count]->getValue();
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] += value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(3)] += value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(3)] -= value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(2)] -= value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(2)] += value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(3)] += value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(3)] -= value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(2)] -= value;
 
 		}
 
 		else if (componentes[count]->getType() == 'H') 
 		{
 			value = componentes[count]->getValue();
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] += 1;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] -= 1;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(2)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(3)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(0)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(1)] += 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] += 1;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] -= 1;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(3)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(0)] -= 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][componentes[count]->getNode(1)] += 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] -= 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
 		}
 
 		else if (componentes[count]->getType() == 'I') //MUDAR
 		{
 			value = componentes[count]->getValue();
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] += value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] += value;
 		}
 
 		else if (componentes[count]->getType() == 'V') //MUDAR
 		{
 
 			value = static_cast<VoltageSource *>(componentes[count])->getDCValue(); //precisa desse cast para acessar o método da Voltage Source
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(1)] += 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
 		}
 
 		else if (componentes[count]->getType() == 'O') 
 		{
-			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
-			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += 1;
-			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= 1;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += 1;
+			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= 1;
 		}
 
 		// M
@@ -744,5 +756,14 @@ void Netlist::NewtonRaphsonRandomizeVariables() //only randomize the big errors
 }
 
 
+void Netlist::ACSweep()
+{
+	SistemaLinear.SaveDC();
+	SistemaLinear.InitializeG_MatrixAC();
+	// for inicio ate o final
+	//monta estampa AC
+	//Resolve sistema
+	//salva variaveis
 
+}
 

@@ -15,6 +15,15 @@
 
 using namespace std;
 
+class ACParameters
+{
+public:
+	char stepType; // L for Linear; O for Octal; D for Decade;
+	double steps;
+	double startFrequency;
+	double endFrequency;
+};
+
 class Netlist  
 {
 public:
@@ -27,8 +36,9 @@ public:
 	void NewtonRaphson();
 	void NewtonRaphsonError();
 	void NewtonRaphsonRandomizeVariables();
-
+	void ACSweep();
 	LinearSystem SistemaLinear;
+	ACParameters ParametrosAC;
 private:
 	float frequency;
 	vector<unsigned> netlistNodes;
@@ -37,3 +47,4 @@ private:
 	unsigned NewtonRaphsonIterations;
 	bool convergiu;
 };
+

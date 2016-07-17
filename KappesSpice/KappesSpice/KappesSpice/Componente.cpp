@@ -5,6 +5,8 @@
 #include <iterator>
 #include <sstream>
 #include <vector>
+#include <complex>
+#include <cmath>
 #include "Componente.h"
 
 using namespace std;
