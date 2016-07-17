@@ -25,6 +25,11 @@ __published:	// IDE-managed Components
         TMenuItem *IniciarMOSconduzindo1;
         TMenuItem *MostrarEstampas2;
         TMenuItem *Avanado1;
+        TMenuItem *N131;
+        TMenuItem *N1;
+        TMenuItem *Mtodo1;
+        TMenuItem *Ajuda1;
+        TMenuItem *Sobre1;
         void __fastcall Abrir1Click(TObject *Sender);
         void __fastcall FormCreate(TObject *Sender);
         void __fastcall MostrarEstampasAC1Click(TObject *Sender);
@@ -33,6 +38,11 @@ __published:	// IDE-managed Components
         void __fastcall MostrarConvergencia1Click(TObject *Sender);
         void __fastcall MostrarEstampas2Click(TObject *Sender);
         void __fastcall Avanado1Click(TObject *Sender);
+        void __fastcall Mtodo1Click(TObject *Sender);
+        void __fastcall Sobre1Click(TObject *Sender);
+        void __fastcall N131Click(TObject *Sender);
+        void __fastcall Ajuda1Click(TObject *Sender);
+        void __fastcall N1Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TForm1(TComponent* Owner);

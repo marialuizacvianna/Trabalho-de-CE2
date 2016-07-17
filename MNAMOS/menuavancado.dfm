@@ -3,7 +3,7 @@ object Form2: TForm2
   Top = 300
   Width = 348
   Height = 246
-  Caption = 'Form2'
+  Caption = 'Avan'#231'ado'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
