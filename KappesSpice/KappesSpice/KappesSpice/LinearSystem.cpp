@@ -14,24 +14,19 @@ void LinearSystem::InitializeG_Matrix()
 	G_Matrix = new double*[(rows+extraRows)]; //Creating the rows, a array of pointers to double.
 	for (int i = 0; i < (rows+ extraRows); i++)
 		G_Matrix[i] = new double[(rows+ extraRows) + 1]; //Creating the columns, the array of double
-	for (int i = 0; i < (rows + extraRows); i++) //reseting G_Matrix and lastVariables
+	for (int i = 0; i < (rows + extraRows); i++)
 		for (int j = 0; j < (rows + extraRows) + 1; j++)
-		{ 
 			G_Matrix[i][j] = 0;
-			lastVariables.push_back(0.1);
-			error.push_back(0);
-		}
-			
 }
 
 void LinearSystem::PrintG_Matrix()
 {
 	cout << endl;
 
-	for (int i = 1; i < (rows + extraRows); i++) //i starts from 1, becouse we ignore the node 0( AKA ground)
+	for (int i = 0; i < (rows + extraRows); i++)
 	{
 		cout << "| ";
-		for (int j = 1; j < (rows + extraRows + 1); j++) //j starts from 1, becouse we ignore the node 0( AKA ground)
+		for (int j = 0; j < (rows + extraRows); j++)
 		{
 			cout << G_Matrix[i][j];
 			cout << " ";
@@ -42,7 +37,7 @@ void LinearSystem::PrintG_Matrix()
 	cout << endl;
 }
 
-/*void LinearSystem::setRowsValue(vector <Componente *> componentes)
+void LinearSystem::setRowsValue(vector <Componente *> componentes)
 {
 	vector<unsigned> nosNaoRepetidos;
 	unsigned count = 0;
@@ -52,9 +47,6 @@ void LinearSystem::PrintG_Matrix()
 	{
 		rows = 0;
 
-		if (componentes[count]->getType() == 'H')
-			extraRows += 2; //essa informacao já foi contada no metodo que le a netlist
-		
 		for (unsigned i = 0; i < (componentes[count]->getNumberOfNodes()); i++)
 		{
 			unsigned repetido = 0;
@@ -76,11 +68,6 @@ void LinearSystem::PrintG_Matrix()
 	}
 
 	rows = sizeof(nosNaoRepetidos) ;
-}*/
-
-void LinearSystem::setRowsValue(unsigned numberOfnodes)
-{
-	rows = numberOfnodes;
 }
 
 void LinearSystem::SolveLinearSystem()
@@ -132,93 +119,12 @@ void LinearSystem::SolveLinearSystem()
 
 void LinearSystem::PrintVariables()
 {
-	int i = 1;
-	for (; i < rows; i++)
-		cout << variables[i] - variables[0] <<endl; //colocando 0 zero como referencia, sao tensoes
-	for (; i < (rows + extraRows); i++)
-		cout << variables[i] << endl;// sao correntes
+	for (int i = 0; i < (rows + extraRows); i++)
+		cout << variables[i];
 	cout << endl;
 
 }
 int LinearSystem::GetRows()
 {
-	return rows - 1; // we dont recognize the 0 (AKA Ground)
-}
-void LinearSystem::SaveDC_Matrix()
-{
-	DC_Matrix = new double*[(rows + extraRows)]; //Creating the rows, a array of pointers to double.
-	for (int i = 0; i < (rows + extraRows); i++)
-		DC_Matrix[i] = new double[(rows + extraRows) + 1]; //Creating the columns, the array of double
-	for (int i = 0; i < (rows + extraRows); i++)
-		for (int j = 0; j < (rows + extraRows) + 1; j++)
-			DC_Matrix[i][j] = G_Matrix[i][j];
-
-}
-void LinearSystem::ResetG_Matrix()
-{
-	for (int i = 0; i < (rows + extraRows); i++)
-		for (int j = 0; j < (rows + extraRows) + 1; j++)
-			G_Matrix[i][j] = 0;
-
-}
-
-void LinearSystem::NewtonRaphson()
-{
-	unsigned attempts = 0;
-	convergiu = false;
-	while (attempts < NR_ATTEMPTS && !convergiu)
-	{
-		for (int i = 0; (i < 40 && !convergiu); i++)
-		{
-			SolveLinearSystem();
-			NewtonRaphsonError();
-			if (fabs(maxError) < NR_TOLERANCE)
-			{
-				convergiu = true;
-			}
-
-		}
-		if (!convergiu) //randomize lastVariables
-		{
-			attempts++;
-			NewtonRaphsonRandomizeVariables();
-			lastVariables = variables;
-		}
-
-	}
-}
-
-void LinearSystem::NewtonRaphsonError()
-{
-	maxError = 0;
-
-	for (unsigned i = 0; i < variables.size(); i++)
-	{
-		error[i] = variables[i] - lastVariables[i];
-		if (variables[i] > NR_RELATIVE_ABSOLUTE_TRESHOLD)
-		{
-			error[i] = fabs(error[i]) / variables[i];
-
-			if (fabs(error[i]) > fabs(maxError))
-				maxError = error[i];
-
-		}
-		else
-			if (fabs(error[i]) > fabs(maxError))
-				maxError = error[i];
-			
-
-	}
-
-}
-
-void LinearSystem::NewtonRaphsonRandomizeVariables() //only randomize the big errors
-{
-	int i = 0;
-	for (; i < rows; i++) // tensões de -10 a 10
-		if (fabs(error[i]) > NR_TOLERANCE)
-			lastVariables[i] = (((rand() % 2000) / 100.0) - 10);
-	for (unsigned j = i; j < lastVariables.size(); j++) // correntes de - 1 a 1
-		if (fabs(error[i]) > NR_TOLERANCE)
-			lastVariables[i] = (((rand() % 200) / 100.0) - 1);
+	return rows;
 }
