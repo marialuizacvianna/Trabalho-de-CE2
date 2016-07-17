@@ -211,7 +211,7 @@ double Transformador:: getValueM()
 
 	void Mosfet::setLinearParameters()
 	{
-		if (mosType = 'N')
+		if (mosType == 'N')
 		{
 			if (VBS > phi / 2)
 				VBSaux = phi / 2;
@@ -285,29 +285,22 @@ double Transformador:: getValueM()
 
 		}
 
-		printConditions();
+		//printConditions();
 	}
 	void Mosfet::printConditions()
 	{
 		cout << "M";
 		cout << getName();
+		cout << " ";
 		cout << mosType	;
-		cout << "Gm: ";
-		cout << Gm ;
-		cout << "Gds: ";
-		cout << Gds ;
-		cout << "Gmb: ";
-		cout << Gmb ;
-		cout << "Cgs: ";
-		cout << CGS ;
-		cout << "Cgd: ";
-		cout << CGD ;
-		cout << "Cbg: ";
-		cout << CBG ;
-		cout << "VGS: ";
-		cout << VGS ;
-		cout << "VDS: ";
-		cout << VDS ;
-		cout << "ID: ";
-		cout << ID << endl;
+		cout << " ";
+		cout << "Gm: " << Gm ;
+		cout << " Gds: " << Gds ;
+		cout << " Gmb: " << Gmb ;
+		cout << " Cgs: " << CGS ;
+		cout << " Cgd: " << CGD ;
+		cout << " Cbg: " << CBG ;
+		cout << " VGS: " << VGS ;
+		cout << " VDS: " << VDS ;
+		cout << " ID: " << ID << endl;
 	}

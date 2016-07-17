@@ -341,7 +341,7 @@ Netlist::Netlist(string netlistPath)
 			(m->addNode)(stoul(lineParameters[4])); //bulk
 			for (int i = 1; i < 5; i++)
 				checkNewNode(stoul(lineParameters[i]));
-			(m->mosType) = (lineParameters[5][0]);
+			(m->mosType) = (lineParameters[5].at(0));
 			(m->comprimento) = stof(lineParameters[6].substr(2)); //we need to remove 'L='
 			(m->largura) = stof(lineParameters[7].substr(2));//we need to remove 'W='
 			(m->k) = stof(lineParameters[8]);
@@ -698,21 +698,17 @@ void Netlist::NewtonRaphson()
 {
 	unsigned attempts = 0;
 	convergiu = false;
-	cout << "LAST VARIABLES" << endl;
-	for (unsigned i = 1; i < SistemaLinear.lastVariables.size(); i++)
-		cout << SistemaLinear.lastVariables[i]<<endl;
 
 
 	while (attempts < NR_ATTEMPTS && !convergiu)
 	{
-		NewtonRaphsonPrint();
+		//NewtonRaphsonPrint();
 		for (int i = 0; (i < 40 && !convergiu); i++)
 		{
 			DoConductanceMatrixDC();
 			SistemaLinear.SolveLinearSystem();
 			NewtonRaphsonError();
-			NewtonRaphsonPrint();
-			system("pause");
+			//NewtonRaphsonPrint();
 			if (fabs(SistemaLinear.maxError) < NR_TOLERANCE)
 			{
 				convergiu = true;

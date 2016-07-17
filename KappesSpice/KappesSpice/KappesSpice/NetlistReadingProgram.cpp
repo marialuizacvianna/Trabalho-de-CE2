@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
 
 
 	//const char* netlistPath = "C:\\Trabalho-de-CE2\\simples.net";
-	const char* netlistPath = "..\\..\\..\\netlists de teste\\mosfet.net";
+	const char* netlistPath = "..\\..\\..\\netlists de teste\\transistores.net";
 	Netlist netlist(netlistPath);
 	cout << "FEZ NETLIST" << endl;
 	netlist.SistemaLinear.setRowsValue(netlist.GetNumberOfNodes());

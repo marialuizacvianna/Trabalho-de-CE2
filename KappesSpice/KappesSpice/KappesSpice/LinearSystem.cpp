@@ -58,53 +58,6 @@ void LinearSystem::setRowsValue(unsigned numberOfnodes)
 	rows = numberOfnodes;
 }
 
-/*void LinearSystem::SolveLinearSystem()
-{
-	int n = (rows + extraRows);
-	for (int i = 0; i<n; i++) {
-		// Search for maximum in this column
-		double maxEl = abs(G_Matrix[i][i]);
-		int maxRow = i;
-		for (int k = i + 1; k<n; k++) {
-			if (abs(G_Matrix[k][i]) > maxEl) {
-				maxEl = abs(G_Matrix[k][i]);
-				maxRow = k;
-			}
-		}
-
-		// Swap maximum row with current row (column by column)
-		for (int k = i; k<n + 1; k++) {
-			double tmp = G_Matrix[maxRow][k];
-			G_Matrix[maxRow][k] = G_Matrix[i][k];
-			G_Matrix[i][k] = tmp;
-		}
-
-		// Make all rows below this one 0 in current column
-		for (int k = i + 1; k<n; k++) {
-			double c = -G_Matrix[k][i] / G_Matrix[i][i];
-			for (int j = i; j<n + 1; j++) {
-				if (i == j) {
-					G_Matrix[k][j] = 0;
-				}
-				else {
-					G_Matrix[k][j] += c * G_Matrix[i][j];
-				}
-			}
-		}
-	}
-
-	// Solve equation Ax=b for an upper triangular matrix A
-	vector<double> x(n);
-	for (int i = n - 1; i >= 0; i--) {
-		x[i] = G_Matrix[i][n] / G_Matrix[i][i];
-		for (int k = i - 1; k >= 0; k--) {
-			G_Matrix[k][n] -= G_Matrix[k][i] * x[i];
-		}
-	}
-	this->variables = x;
-
-}*/
-
 
 int LinearSystem::SolveLinearSystem()
 {
@@ -200,50 +153,47 @@ void LinearSystem::ResetG_MatrixAC()
 			G_MatrixAC[i][j] = 0;
 
 }
-void LinearSystem::SolveLinearSystemC() 
+
+
+
+int LinearSystem::SolveLinearSystemC()
 {
-	int n = (rows + extraRows);
-	for (int i = 0; i<n; i++) {
-		// Search for maximum in this column
-		dcomp maxEl = abs(G_MatrixAC[i][i]);
-		int maxRow = i;
-		for (int k = i + 1; k<n; k++) {
-			if (abs(G_MatrixAC[k][i]) > abs(maxEl) ){
-				maxEl = abs(G_MatrixAC[k][i]);
-				maxRow = k;
+	int i, j, l, a;
+	dcomp t, p;
+	int nv = (rows + extraRows - 1);
+
+	for (i = 1; i <= nv; i++) {
+		t = 0.0;
+		a = i;
+		for (l = i; l <= nv; l++) {
+			if (abs(G_MatrixAC[l][i])>abs(t)) {
+				a = l;
+				t = G_MatrixAC[l][i];
 			}
 		}
-
-		// Swap maximum row with current row (column by column)
-		for (int k = i; k<n + 1; k++) {
-			dcomp tmp = G_MatrixAC[maxRow][k];
-			G_MatrixAC[maxRow][k] = G_MatrixAC[i][k];
-			G_MatrixAC[i][k] = tmp;
-		}
-
-		// Make all rows below this one 0 in current column
-		for (int k = i + 1; k<n; k++) {
-			dcomp c = -G_MatrixAC[k][i] / G_MatrixAC[i][i];
-			for (int j = i; j<n + 1; j++) {
-				if (i == j) {
-					G_MatrixAC[k][j] = 0;
-				}
-				else {
-					G_MatrixAC[k][j] += c * G_MatrixAC[i][j];
-				}
+		if (i != a) {
+			for (l = 1; l <= nv + 1; l++) {
+				p = G_MatrixAC[i][l];
+				G_MatrixAC[i][l] = G_MatrixAC[a][l];
+				G_MatrixAC[a][l] = p;
 			}
+		}
+		if (abs(t)<TOLG) {
+			cout << "Sistema singular" << endl;
+			return 1;
+		}
+		for (j = nv + 1; j>0; j--) {  /* Basta j>i em vez de j>0 */
+			G_MatrixAC[i][j] = G_MatrixAC[i][j] / t;
+			p = G_Matrix[i][j];
+			if (p != (0.0,0.0))  /* Evita operacoes com zero */
+				for (l = 1; l <= nv; l++) {
+					if (l != i)
+						G_MatrixAC[l][j] -= G_MatrixAC[l][i] * p;
+				}
 		}
 	}
 
-	// Solve equation Ax=b for an upper triangular matrix A
-	vector<dcomp> x(n);
-	for (int i = n - 1; i >= 0; i--) {
-		x[i] = G_MatrixAC[i][n] / G_MatrixAC[i][i];
-		for (int k = i - 1; k >= 0; k--) {
-			G_MatrixAC[k][n] -= G_MatrixAC[k][i] * x[i];
-		}
-	}
-	this->variablesComp = x;
-
-
+	for (i = 0; i <= nv;i++)
+		this->variablesComp[i] = G_MatrixAC[i][nv + 1];
+	return 0;
 }

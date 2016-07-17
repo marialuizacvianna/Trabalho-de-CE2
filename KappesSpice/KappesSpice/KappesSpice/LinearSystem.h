@@ -32,7 +32,7 @@ class LinearSystem
 		dcomp **G_MatrixAC; // complex MATRIX
 		void InitializeG_MatrixAC();
 		void ResetG_MatrixAC();
-		void SolveLinearSystemC();
+		int SolveLinearSystemC();
 		vector<dcomp> variablesComp;
 
 		int extraRows;
