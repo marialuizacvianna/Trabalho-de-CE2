@@ -9,6 +9,10 @@
 
 using namespace std;
 
+void Componente::initializeNumberOfNodes(){
+	numberOfNodes = 0;
+}
+
 void Componente::setName(string nome)
 {
 	Name = nome;

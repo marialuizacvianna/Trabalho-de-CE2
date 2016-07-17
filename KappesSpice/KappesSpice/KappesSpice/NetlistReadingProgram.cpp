@@ -7,8 +7,7 @@
 #include <vector>
 #include "Componente.h"
 #include "Netlist.h"
-//TODO: deletar esse comentário
-//TODO: testando revert
+
 
 int main(int argc, char* argv[])
 {

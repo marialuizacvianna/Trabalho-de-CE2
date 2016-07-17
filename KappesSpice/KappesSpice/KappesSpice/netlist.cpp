@@ -15,6 +15,10 @@
 using namespace std;
 
 
+void auxInitializeNumberOfNodes(Componente *componente){
+	componente->initializeNumberOfNodes();
+}
+
 Netlist::Netlist(string netlistPath)
 {
 	string linha;
@@ -50,6 +54,7 @@ Netlist::Netlist(string netlistPath)
 		{
 			string nomeR;
 			Resistor *r = new Resistor;
+			auxInitializeNumberOfNodes(r);//set initial number as 0, there was a problem in setting it's value as 0 on .h (C++ builder)
 			nomeR = lineParameters[0];
 			(r->addType)(nomeR[0]);
 			nomeR.erase(nomeR.begin()); // remove the first letter, the component identifier
@@ -67,6 +72,7 @@ Netlist::Netlist(string netlistPath)
 		{
 			string nomeL;
 			Indutor *l = new Indutor;
+			auxInitializeNumberOfNodes(l);
 			nomeL = lineParameters[0];
 			(l->addType)(nomeL[0]);
 			nomeL.erase(nomeL.begin()); // remove the first letter, the component identifier
@@ -85,6 +91,7 @@ Netlist::Netlist(string netlistPath)
 		{
 			string firstIndutor, secondIndutor, nomeK;
 			Transformador *t = new Transformador;
+			auxInitializeNumberOfNodes(t);
 			unsigned achouAmbos = 0;
 			unsigned count, countAuxiliar = 0;
 			vector<Componente*> auxiliar;
@@ -148,6 +155,7 @@ Netlist::Netlist(string netlistPath)
 		{
 			string nomeC;
 			Capacitor *c = new Capacitor;
+			auxInitializeNumberOfNodes(c);
 			nomeC = lineParameters[0];
 			(c->addType)(nomeC[0]);
 			nomeC.erase(nomeC.begin()); // remove the first letter, the component identifier
@@ -166,6 +174,7 @@ Netlist::Netlist(string netlistPath)
 		{
 			string nomeE;
 			VoltageSrcCntrlVoltage *e = new VoltageSrcCntrlVoltage;
+			auxInitializeNumberOfNodes(e);
 			nomeE = lineParameters[0];
 			(e->addType)(nomeE[0]);
 			nomeE.erase(nomeE.begin()); // remove the first letter, the component identifier
@@ -187,6 +196,7 @@ Netlist::Netlist(string netlistPath)
 		{
 			string nomeF;
 			CurrentSrcCntrlCurrent *f = new CurrentSrcCntrlCurrent;
+			auxInitializeNumberOfNodes(f);
 			nomeF = lineParameters[0];
 			(f->addType)(nomeF[0]);
 			nomeF.erase(nomeF.begin()); // remove the first letter, the component identifier
@@ -208,6 +218,7 @@ Netlist::Netlist(string netlistPath)
 		{
 			string nomeG;
 			CurrentSrcCntrlVoltage *g = new CurrentSrcCntrlVoltage;
+			auxInitializeNumberOfNodes(g);
 			nomeG = lineParameters[0];
 			(g->addType)(nomeG[0]);
 			nomeG.erase(nomeG.begin()); // remove the first letter, the component identifier
@@ -227,6 +238,7 @@ Netlist::Netlist(string netlistPath)
 		{
 			string nomeH;
 			VoltageSrcCntrlCurrent *h = new VoltageSrcCntrlCurrent;
+			auxInitializeNumberOfNodes(h);
 			nomeH = lineParameters[0];
 			(h->addType)(nomeH[0]);
 			nomeH.erase(nomeH.begin()); // remove the first letter, the component identifier
@@ -250,6 +262,7 @@ Netlist::Netlist(string netlistPath)
 		{
 			string nomeI;
 			CurrentSource *i = new CurrentSource;
+			auxInitializeNumberOfNodes(i);
 			nomeI = lineParameters[0];
 			(i->addType)(nomeI[0]);
 			nomeI.erase(nomeI.begin()); // remove the first letter, the component identifier
@@ -269,6 +282,7 @@ Netlist::Netlist(string netlistPath)
 		{
 			string nomeV;
 			VoltageSource *v = new VoltageSource;
+			auxInitializeNumberOfNodes(v);
 			nomeV = lineParameters[0];
 			(v->addType)(nomeV[0]);
 			nomeV.erase(nomeV.begin()); // remove the first letter, the component identifier
@@ -292,6 +306,7 @@ Netlist::Netlist(string netlistPath)
 		{
 			string nomeO;
 			AmpOp *o = new AmpOp;
+			auxInitializeNumberOfNodes(o);
 			nomeO = lineParameters[0];
 			(o->addType)(nomeO[0]);
 			nomeO.erase(nomeO.begin()); // remove the first letter, the component identifier
@@ -312,6 +327,7 @@ Netlist::Netlist(string netlistPath)
 		{
 			string nomeM;
 			Mosfet *m = new Mosfet;
+			auxInitializeNumberOfNodes(m);
 			nomeM = lineParameters[0];
 			(m->addType)(nomeM[0]);
 			nomeM.erase(nomeM.begin()); // remove the first letter, the component identifier
@@ -462,7 +478,7 @@ void Netlist::DoConductanceMatrixDC()
 
 		else if (componentes[count]->getType() == 'V') //funcionando
 		{
-			value = static_cast<VoltageSource *>(componentes[count])->getDCValue(); //precisa desse cast para acessar o método da Voltage Source
+			value = static_cast<VoltageSource *>(componentes[count])->getDCValue(); //precisa desse cast para acessar o mï¿½todo da Voltage Source
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
@@ -639,7 +655,7 @@ void Netlist::DoConductanceMatrixAC()
 		else if (componentes[count]->getType() == 'V') //MUDAR
 		{
 
-			value = static_cast<VoltageSource *>(componentes[count])->getDCValue(); //precisa desse cast para acessar o método da Voltage Source
+			value = static_cast<VoltageSource *>(componentes[count])->getDCValue(); //precisa desse cast para acessar o mï¿½todo da Voltage Source
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;

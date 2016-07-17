@@ -1,8 +1,11 @@
-#pragma once
+#ifndef COMPONENTE_H
+#define COMPONENTE_H
+
 #include <string>
 #include <vector>
 #include <stack>
 #include <fstream>
+
 using namespace std;
 
 class Componente
@@ -19,10 +22,13 @@ public:
 	unsigned getNumberOfNodes();
 	void SetExtraPosition(unsigned);
 	unsigned GetExtraPosition(unsigned);
+	void initializeNumberOfNodes();
+
 protected:
 	char Type;
 	vector<unsigned> nodes;
-	unsigned numberOfNodes = 0;
+//	unsigned numberOfNodes = 0;
+	unsigned numberOfNodes;
 	string Name;
 	double Value;
 	vector<unsigned> extraPosition;
@@ -149,3 +155,5 @@ public:
 
 
 };
+
+#endif
