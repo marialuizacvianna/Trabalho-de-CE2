@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
 
 
 	//const char* netlistPath = "C:\\Trabalho-de-CE2\\simples.net";
-	const char* netlistPath = "..\\..\\..\\netlists de teste\\transistores.net";
+	const char* netlistPath = "..\\..\\..\\netlists de teste\\mosfet.net";
 	Netlist netlist(netlistPath);
 	cout << "FEZ NETLIST" << endl;
 	netlist.SistemaLinear.setRowsValue(netlist.GetNumberOfNodes());
@@ -25,6 +25,8 @@ int main(int argc, char* argv[])
 	cout << "RESOLVEU O SISTEMA" << endl;
 	//netlist.SistemaLinear.PrintG_Matrix();
 	netlist.SistemaLinear.PrintVariables();
+	netlist.WriteDCData();
+	netlist.WriteACData();
 	system("pause");
 
 	return 0;

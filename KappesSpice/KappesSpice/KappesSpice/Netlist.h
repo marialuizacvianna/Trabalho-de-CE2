@@ -38,9 +38,15 @@ public:
 	void NewtonRaphsonRandomizeVariables();
 	void NewtonRaphsonPrint();
 	void ACSweep();
+	void WriteDCData();
+	void WriteACData();
 	LinearSystem SistemaLinear;
 	ACParameters ParametrosAC;
 private:
+	ofstream dcFile;
+	ofstream acFile;
+	string path;
+	bool AC;  //define if it will be made the ACSweep
 	double frequency;
 	vector<unsigned> netlistNodes;
 	vector <string> netlist;

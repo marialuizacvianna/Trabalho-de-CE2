@@ -5,6 +5,7 @@
 #include <iterator>
 #include <sstream>
 #include <vector>
+#include <iomanip>
 #include <complex>
 #include <cmath>
 #include "LinearSystem.h"
@@ -14,7 +15,7 @@
 #define  PI2 dcomp		(8 * atan(1))
 #define PI dcomp		(4 * atan(1))
 #define I dcomp			(0.0, 1.0)
-
+#define WRITE_WIDTH  15
 #define DC_RESISTANCE_C  1e9
 
 using namespace std;
@@ -28,7 +29,9 @@ Netlist::Netlist(string netlistPath)
 	string linha;
 	ifstream netlistFile;
 	unsigned index = 0;
-   
+	path = netlistPath;
+	path.resize(path.size() - 3); //removes the "txt" from the end, we will use this path to write new files
+
 	SistemaLinear.extraRows = 0;
 
 	netlistFile.open(netlistPath);
@@ -383,7 +386,12 @@ Netlist::Netlist(string netlistPath)
 				ParametrosAC.points = stod(lineParameters[2]);
 				ParametrosAC.startFrequency = stod(lineParameters[3]);
 				ParametrosAC.endFrequency = stod(lineParameters[4]);
-				cout << "entrou" << endl;
+				AC = true;
+			}
+			else
+			{
+				cout << "Parametros AC nao definidos" << endl;
+				AC = false;
 			}
 		}
 
@@ -867,6 +875,82 @@ void Netlist::NewtonRaphsonPrint()
 	
 
 }
+void Netlist::WriteDCData()
+{
+	string newPath;
+	newPath = path + "dc";
+	cout << newPath << endl;	
+
+	dcFile.open(newPath);
+	if (dcFile.is_open())
+	{
+		int i = 1;
+		for (; i < SistemaLinear.rows; i++)
+			dcFile  << "Tensao e" << i << " " ;
+		for (; i < (SistemaLinear.rows + SistemaLinear.extraRows); i++)
+			dcFile  << "Corrente " << SistemaLinear.extraRowsName[i - SistemaLinear.rows] << " ";
+		dcFile << endl;
+		i = 1;
+		for (; i < SistemaLinear.rows; i++)
+			dcFile  << SistemaLinear.variables[i] << " ";
+		for (; i < (SistemaLinear.rows + SistemaLinear.extraRows); i++)
+			dcFile  << SistemaLinear.variables[i] << " ";
+		dcFile << endl;
+
+		dcFile.close();
+	}
+	else cout << "Unable to open file"<<endl;
+
+}
+
+void Netlist::WriteACData()
+{
+	string newPath;
+	vector<string> currentName = SistemaLinear.extraRowsName;
+	newPath = path + "tab";
+	cout << newPath << endl;
+	ofstream acFile(newPath);
+	if (acFile.is_open())
+	{
+		int i = 1;
+		acFile << "f" << " ";
+		for (; i < SistemaLinear.rows; i++)
+		{
+			acFile << i << "m" << " ";
+			acFile << i << "f" << " ";
+		}	
+		for (; i < (SistemaLinear.rows + SistemaLinear.extraRows); i++)
+		{
+			currentName[i - SistemaLinear.rows].resize(2);
+			acFile << currentName[i - SistemaLinear.rows] << (i - SistemaLinear.rows + 1)<< "m" << " ";
+			acFile << currentName[i - SistemaLinear.rows] << (i - SistemaLinear.rows + 1) << "f" << " ";
+		}		
+		acFile << endl;
+
+	}
+	else cout << "Unable to open file" << endl;
+
+}
+/*
+void Netlist::WriteACLine()
+{
+	if (acFile.is_open())
+	{
+		int i = 1;
+
+		for (; i < SistemaLinear.rows; i++)
+			acFile << SistemaLinear.variables[i] << " ";
+		for (; i < (SistemaLinear.rows + SistemaLinear.extraRows); i++)
+			acFile << SistemaLinear.variables[i] << " ";
+		acFile << endl;
+
+		acFile.close();
+	}
+	else cout << "Unable to open file" << endl;
+
+}
+*/
+
 
 void Netlist::ACSweep()
 {
