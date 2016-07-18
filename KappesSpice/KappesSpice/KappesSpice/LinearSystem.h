@@ -36,6 +36,7 @@ class LinearSystem
 		vector<dcomp> variablesComp;
 
 		int extraRows;
+		vector<string> extraRowsName;
 		vector<double> lastVariables;
 		vector<double> variables;
 		vector<double> DCvariables;

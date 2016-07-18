@@ -106,11 +106,12 @@ int LinearSystem::SolveLinearSystem()
 
 void LinearSystem::PrintVariables()
 {
+
 	int i = 1;
 	for (; i < rows; i++)
-		cout << "Tensao "<< i <<": " << variables[i] <<endl; 
+		cout << "Tensao e" << i << ": " << variables[i] << endl;
 	for (; i < (rows + extraRows); i++)
-		cout <<  "Corrente " << i << ": " << variables[i] << endl;
+		cout << "Corrente "<< extraRowsName[i - rows] << ": " << variables[i] << endl;
 	cout << endl;
 
 }
