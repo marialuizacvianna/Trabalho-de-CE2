@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <complex>
 #include <math.h>
+#include <time.h>
 #include "LinearSystem.h"
 #include "Componente.h"
 #include "Netlist.h"
@@ -806,7 +807,7 @@ int Netlist::NewtonRaphson()
 	while (attempts < NR_ATTEMPTS && !convergiu)
 	{
 		//NewtonRaphsonPrint();
-		for (int i = 0; (i < 40 && !convergiu); i++)
+		for (int i = 0; (i < 100 && !convergiu); i++)
 		{
 			DoConductanceMatrixDC();
 			//SistemaLinear.PrintG_Matrix();
@@ -864,6 +865,7 @@ void Netlist::NewtonRaphsonError()
 void Netlist::NewtonRaphsonRandomizeVariables() //only randomize the big errors
 {
 	int i = 0;
+	srand(time(NULL));
 	for (; i < SistemaLinear.rows; i++) // tensões de -10 a 10
 		if (fabs(SistemaLinear.error[i]) > NR_TOLERANCE)
 			SistemaLinear.lastVariables[i] = (((rand() % 2000) / 100.0) - 10);
