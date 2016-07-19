@@ -18,9 +18,12 @@ __published:	// IDE-managed Components
         TMainMenu *MainMenu1;
         TMenuItem *Arquivo1;
         TMenuItem *Abrir1;
+        TMenuItem *ImprimirEstampas1;
+        TMenuItem *ImprimirEstampas2;
 //        TMenuItem *Mostrarestampas1;
         void __fastcall Abrir1Click(TObject *Sender);
         void __fastcall FormCreate(TObject *Sender);
+        void __fastcall ImprimirEstampas2Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TForm1(TComponent* Owner);

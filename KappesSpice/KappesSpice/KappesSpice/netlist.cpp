@@ -40,7 +40,7 @@ Netlist::Netlist(string netlistPath)
 		strcat(textoParaImprimirNaGUI, "Nao foi possivel abrir o arquivo\n");
 	}
 	//cout << "Lendo Netlist : " << netlistPath << endl;
-	strcat(textoParaImprimirNaGUI, "Lendo Netlist : ");
+	strcat(textoParaImprimirNaGUI, "Lendo Netlist : \n");
 	getline(netlistFile, linha);
 	while (getline(netlistFile, linha))
 	{

@@ -12,10 +12,10 @@
 int main(int argc, char* argv[])
 {
 
-
 	//const char* netlistPath = "C:\\Trabalho-de-CE2\\simples.net";
 	const char* netlistPath = "..\\..\\..\\simples.net";
 	Netlist netlist(netlistPath);
+//	netlist.imprimirTodosOsCoutsDoConstrutor();
 	cout << "FEZ NETLIST" << endl;
 	netlist.DoConductanceMatrixDC();
 	cout << "FEZ A MATRIZ" << endl;

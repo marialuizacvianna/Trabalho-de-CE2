@@ -18,6 +18,7 @@ TForm1 *Form1;
 char nomeArquivo[200+1];
 char printer[20000];
 FILE *arquivo;
+boolean printEstampas = false;
 LinearSystem sistemaLinear;
 #define printf xprintf
 void xprintf(char* format,...) /* Escreve no memo1 */
@@ -30,9 +31,9 @@ void xprintf(char* format,...) /* Escreve no memo1 */
 }
 
 int solveLinearSystem(char *filename){
- 	Netlist netlist(filename);
+   	Netlist netlist(filename);
 	printf("FEZ NETLIST");
-        printf(netlist.getTextoParaImprimirNaGui().c_str());
+   //     printf(netlist.getTextoParaImprimirNaGui().c_str());
   //      strcpy(printer, netlist.getTextoParaImprimirNaGui().c_str());
  //       printf(printer);
  //	netlist.DoConductanceMatrixDC();
@@ -43,7 +44,7 @@ int solveLinearSystem(char *filename){
  //	netlist.SistemaLinear.PrintG_Matrix();
  //	netlist.SistemaLinear.PrintVariables();
 //	system("pause");
-	
+
 	return 0;
 }
 
@@ -80,8 +81,6 @@ if (!OpenDialog1->Execute()) return;
     goto denovo;
     }
     printf("aeHO");
-    //solveLinearSystem(nomeArquivo);
-
     string linha;
 	ifstream netlistFile;
 	unsigned index = 0;
@@ -105,4 +104,12 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
   //printf("teste");
   return;
 }
+
+void __fastcall TForm1::ImprimirEstampas2Click(TObject *Sender)
+{
+        printEstampas = !printEstampas;
+        if (printEstampas == true)
+         printf("verdadeiro!");
+}
+//---------------------------------------------------------------------------
 
