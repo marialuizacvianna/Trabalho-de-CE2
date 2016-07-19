@@ -9,14 +9,16 @@
 #include "Componente.h"
 #include "Netlist.h"
 
-
 int main(int argc, char* argv[])
 {
-
-
+	string arquivo;
+	const char* netlistPath = "..\\netlist\\";
 	//const char* netlistPath = "C:\\Trabalho-de-CE2\\simples.net";
-	const char* netlistPath = "..\\..\\..\\netlists de teste\\girador.net";
-	Netlist netlist(netlistPath);
+	//const char* netlistPath = "..\\..\\..\\netlists de teste\\girador.net";
+	cout << "insira o nome do arquivo que esta na pasta netlist.Exemplo <netlist.net>" << endl;
+	cin >> arquivo;
+	arquivo = netlistPath + arquivo;
+	Netlist netlist(arquivo);
 	cout << "FEZ NETLIST" << endl;
 	netlist.SistemaLinear.setRowsValue(netlist.GetNumberOfNodes());
 	netlist.SistemaLinear.InitializeG_Matrix();

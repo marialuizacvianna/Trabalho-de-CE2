@@ -1,3 +1,1 @@
-﻿  netlist.cpp
-c:\trabalho-de-ce2\kappesspice\kappesspice\kappesspice\netlist.cpp(868): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-  KappesSpice.vcxproj -> C:\Trabalho-de-CE2\KappesSpice\KappesSpice\Debug\KappesSpice.exe
+﻿  KappesSpice.vcxproj -> C:\Users\MariaLuiza\Documents\GitHub\Trabalho-de-CE2\KappesSpice\KappesSpice\Debug\KappesSpice.exe
