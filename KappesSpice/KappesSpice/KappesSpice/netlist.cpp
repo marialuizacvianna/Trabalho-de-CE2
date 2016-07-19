@@ -7,19 +7,17 @@
 #include <vector>
 #include <iomanip>
 #include <complex>
-#include <cmath>
+#include <math.h>
 #include "LinearSystem.h"
 #include "Componente.h"
 #include "Netlist.h"
 
-#define  PI2 dcomp		(8 * atan(1))
-#define PI dcomp		(4 * atan(1))
-#define I dcomp			(0.0, 1.0)
+
 #define WRITE_WIDTH  15
 #define DC_RESISTANCE_C  1e9
 
 using namespace std;
-typedef complex<double> dcomp;
+
 
 
 
@@ -31,7 +29,7 @@ Netlist::Netlist(string netlistPath)
 	unsigned index = 0;
 	path = netlistPath;
 	path.resize(path.size() - 3); //removes the "txt" from the end, we will use this path to write new files
-
+	AC = false; //initialize the ACSweep flag in false
 	SistemaLinear.extraRows = 0;
 
 	netlistFile.open(netlistPath);
@@ -39,6 +37,7 @@ Netlist::Netlist(string netlistPath)
 	{
 		cout << "Nao foi possivel abrir o arquivo" << endl;
 		system("pause");
+		return;
 	}
 	cout << "Lendo Netlist : " << netlistPath << endl;
 	getline(netlistFile, linha);
@@ -77,7 +76,7 @@ Netlist::Netlist(string netlistPath)
 
 		case 'L': //nao sei se está correto
 		{
-			string nomeL;
+			string nomeL, nomeJ;
 			Indutor *l = new Indutor;
 			nomeL = lineParameters[0];
 			(l->addType)(nomeL[0]);
@@ -89,7 +88,14 @@ Netlist::Netlist(string netlistPath)
 				checkNewNode(stoul(lineParameters[i]));
 			(l->setValue)(stod(lineParameters[3]));
 			//(l->setInitialValue)(stod(lineParameters[4])); isso nao existe
+
+			SistemaLinear.extraRows += 1;
+			(l->SetExtraPosition)(SistemaLinear.extraRows);
+			nomeJ = "j" + lineParameters[0];
+			SistemaLinear.extraRowsName.push_back(nomeJ);
+
 			componentes.push_back(l);
+
 		}
 		break;
 
@@ -97,62 +103,57 @@ Netlist::Netlist(string netlistPath)
 		{
 			string firstIndutor, secondIndutor, nomeK;
 			Transformador *t = new Transformador;
-			unsigned achouAmbos = 0;
-			unsigned count, countAuxiliar = 0;
-			vector<Componente*> auxiliar;
+			bool achouAmbos = false;
+			bool achou1 = false;
+			bool achou2 = false;
+
+			unsigned count = 0;;
+			unsigned countAuxiliar = 0;
+
+
 			unsigned firstIndutorPosition, secondIndutorPosition;
 
 			firstIndutor = lineParameters[1];
+			firstIndutor.erase(firstIndutor.begin());
 			secondIndutor = lineParameters[2];
+			secondIndutor.erase(secondIndutor.begin());
 
 			nomeK = lineParameters[0];
 			(t->addType)(nomeK[0]);
 			nomeK.erase(nomeK.begin()); // remove the first letter, the component identifier
 			(t->setName)(nomeK);
 
-			while (!achouAmbos && count != sizeof(componentes))
+			while (!achouAmbos && (count < componentes.size()))
 			{
-				unsigned achou1, achou2 = 0;
-				if (componentes[count]->getName() == firstIndutor)
+				
+
+				if ((componentes[count]->getName() == firstIndutor)&&(componentes[count]->getType() == 'L'))
 				{
-					achou1 = 1;
+					cout << count << endl;
+					achou1 = true;
+					(t->addNode)(componentes[count]->getNode(0));
 					(t->addNode)(componentes[count]->getNode(1));
-					(t->addNode)(componentes[count]->getNode(2));
 					(t->setValueFirstIndutor)(componentes[count]->getValue());
 					(t->setValueM)(stod(lineParameters[3]));
 					(t->SetExtraPosition)(componentes[count]->GetExtraPosition(0));
 					firstIndutorPosition = count;
 				}
 
-				if ((componentes[count]->getName()) == secondIndutor)
+				if (((componentes[count]->getName()) == secondIndutor)&& (componentes[count]->getType() == 'L'))
 				{
-					achou2 = 1;
+					cout << count << endl;
+					achou2 = true;
+					(t->addNode)(componentes[count]->getNode(0));
 					(t->addNode)(componentes[count]->getNode(1));
-					(t->addNode)(componentes[count]->getNode(2));
 					(t->setValueSecondIndutor)(componentes[count]->getValue());
 					(t->SetExtraPosition)(componentes[count]->GetExtraPosition(0));
 					secondIndutorPosition = count;
 				}
-				if (achou1 == 1 && achou2 == 1)
-					achouAmbos = 1;
+				if (achou1 == true && achou2 == true)
+					achouAmbos = true;
 
-				count = count + 1;
+				count ++;
 			}
-
-			count = 0;
-			countAuxiliar = 0;
-			while (count != (sizeof(componentes) - 1))
-			{
-				if (count != firstIndutorPosition && count != secondIndutorPosition)
-				{
-					auxiliar[countAuxiliar] = componentes[count];
-					countAuxiliar = countAuxiliar + 1;
-				}
-
-				count = count + 1;
-			}
-
-			componentes = auxiliar;
 
 			componentes.push_back(t);
 		}
@@ -281,8 +282,22 @@ Netlist::Netlist(string netlistPath)
 			for (int i = 1; i < 3; i++)
 				checkNewNode(stoul(lineParameters[i]));
 			(i->setValue)(stod(lineParameters[3]));
-			(i->setPhase)(stod(lineParameters[4]));
-			(i->setDCValue)(stod(lineParameters[5]));
+
+			if (lineParameters.size() == 6) //algumas netlists nao colocam todos os termos. Precisamos tratar
+			{
+				(i->setPhase)(stod(lineParameters[4]));
+				(i->setDCValue)(stod(lineParameters[5]));
+			}
+			else if (lineParameters.size() == 5)
+			{
+				(i->setPhase)(stod(lineParameters[4]));
+				(i->setDCValue)(0);
+			}
+			else
+			{
+				(i->setPhase)(0);
+				(i->setDCValue)(0);
+			}
 			componentes.push_back(i);
 		}
 		break;
@@ -388,17 +403,14 @@ Netlist::Netlist(string netlistPath)
 				ParametrosAC.endFrequency = stod(lineParameters[4]);
 				AC = true;
 			}
-			else
-			{
-				cout << "Parametros AC nao definidos" << endl;
-				AC = false;
-			}
 		}
 
 		
 		}
      	index++;
 	}
+	if (!AC)
+		cout << "Parametros AC nao definidos" << endl;
 
 	netlistFile.close();
 }
@@ -449,7 +461,8 @@ void Netlist::DoConductanceMatrixDC()
 		}
 		else if (componentes[count]->getType() == 'L') //deve funcionar
 		{
-			value = DC_RESISTANCE_C;
+			//cout << "L" << endl;
+			value = 1 / DC_RESISTANCE_C;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
@@ -467,7 +480,7 @@ void Netlist::DoConductanceMatrixDC()
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
 		}
 
-		else if (componentes[count]->getType() == 'E') //deve funcionar
+		else if (componentes[count]->getType() == 'E') //funcionando
 		{
 			value = componentes[count]->getValue();
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
@@ -489,8 +502,9 @@ void Netlist::DoConductanceMatrixDC()
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
 		}
 
-		else if (componentes[count]->getType() == 'G') //deve funcionar
+		else if (componentes[count]->getType() == 'G') //funcionou
 		{
+			//cout << "G" << endl;
 			value = componentes[count]->getValue();
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][componentes[count]->getNode(2)] += value;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][componentes[count]->getNode(3)] += value;
@@ -513,16 +527,17 @@ void Netlist::DoConductanceMatrixDC()
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
 		}
 
-	    else if (componentes[count]->getType() == 'I') //deve funcionar
+	    else if (componentes[count]->getType() == 'I') //funcionando
 		{
-			value = componentes[count]->getValue();
+			//cout << "I" << endl;
+			value = static_cast<CurrentSource *>(componentes[count])->getDCValue();
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] += value;
 		}
 
 		else if (componentes[count]->getType() == 'V') //funcionando
 		{
-			
+			//cout << "V" << endl;
 			value = static_cast<VoltageSource *>(componentes[count])->getDCValue(); //precisa desse cast para acessar o método da Voltage Source
 			SistemaLinear.G_Matrix[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
 			SistemaLinear.G_Matrix[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
@@ -541,6 +556,7 @@ void Netlist::DoConductanceMatrixDC()
 		}
 		else if (componentes[count]->getType() == 'M') //funcionando
 		{
+			//cout << "M" << endl;
 			static_cast<Mosfet *>(componentes[count])->setPolarization(SistemaLinear.lastVariables[componentes[count]->getNode(0)],
 																	   SistemaLinear.lastVariables[componentes[count]->getNode(1)],
 																	   SistemaLinear.lastVariables[componentes[count]->getNode(2)],
@@ -616,12 +632,10 @@ void Netlist::DoConductanceMatrixAC()
 {
 	SistemaLinear.ResetG_MatrixAC();
 	dcomp value;
-	dcomp divisor = (180.0, 0.0);
-	dcomp frequencyAux = (frequency, 0.0);
 
 	for (unsigned count = 0; count < componentes.size(); count++)
 	{
-		if (componentes[count]->getType() == 'R')
+		if (componentes[count]->getType() == 'R') //funcinando
 		{
 			value = 1 / (componentes[count]->getValue());
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
@@ -630,7 +644,7 @@ void Netlist::DoConductanceMatrixAC()
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
 
 		}
-		else if (componentes[count]->getType() == 'L')
+		else if (componentes[count]->getType() == 'L')//funcionando
 		{
 			value = (componentes[count]->getValue())*frequency*PI2*I;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
@@ -640,16 +654,16 @@ void Netlist::DoConductanceMatrixAC()
 			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
 		}
 
-		else if (componentes[count]->getType() == 'C')
+		else if (componentes[count]->getType() == 'C') //funcionado
 		{
-			value = I*PI2*frequencyAux*(componentes[count]->getValue());
+			value = I*PI2*frequency*(componentes[count]->getValue());
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += value;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += value;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= value;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= value;
 		}
 
-		else if (componentes[count]->getType() == 'E')
+		else if (componentes[count]->getType() == 'E') //funcionando
 		{
 			value = componentes[count]->getValue();
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
@@ -660,7 +674,7 @@ void Netlist::DoConductanceMatrixAC()
 			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= value;
 		}
 
-		else if (componentes[count]->getType() == 'F')
+		else if (componentes[count]->getType() == 'F') //deve funcionar
 		{
 			value = componentes[count]->getValue();
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
@@ -671,7 +685,7 @@ void Netlist::DoConductanceMatrixAC()
 			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] += 1;
 		}
 
-		else if (componentes[count]->getType() == 'G')
+		else if (componentes[count]->getType() == 'G') //funcionou
 		{
 			value = componentes[count]->getValue();
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(2)] += value;
@@ -681,7 +695,7 @@ void Netlist::DoConductanceMatrixAC()
 
 		}
 
-		else if (componentes[count]->getType() == 'H')
+		else if (componentes[count]->getType() == 'H') //deve funcionar
 		{
 			value = componentes[count]->getValue();
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] += 1;
@@ -695,16 +709,22 @@ void Netlist::DoConductanceMatrixAC()
 			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
 		}
 
-		else if (componentes[count]->getType() == 'I')
+		else if (componentes[count]->getType() == 'I') //funcionando
 		{
-			value = (static_cast<CurrentSource *>(componentes[count])->getDCValue())*cos((PI / divisor)*static_cast<CurrentSource *>(componentes[count])->getPhase()) + I*(static_cast<CurrentSource *>(componentes[count])->getDCValue())*sin((PI / divisor)*static_cast<CurrentSource *>(componentes[count])->getPhase());
+			double modulo = (static_cast<CurrentSource *>(componentes[count])->getValue());
+			double fase = (static_cast<CurrentSource *>(componentes[count])->getPhase());
+			// VALOR*COS(PI/180*PHASE) + I*VALOR*SIN(PI/180*PHASE)
+			value = modulo*cos(fase*(PI / G_180)) + I*modulo*sin(fase*(PI / G_180));
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] += value;
 		}
 
-		else if (componentes[count]->getType() == 'V')
+		else if (componentes[count]->getType() == 'V') //funcionando
 		{
-			value = (static_cast<VoltageSource *>(componentes[count])->getDCValue())*cos((PI / divisor)*static_cast<VoltageSource *>(componentes[count])->getPhase()) + (I*static_cast<VoltageSource *>(componentes[count])->getDCValue()*sin((PI / divisor)*static_cast<VoltageSource *>(componentes[count])->getPhase()));//precisa desse cast para acessar o método da Voltage Source
+			double modulo = (static_cast<VoltageSource *>(componentes[count])->getValue());
+			double fase = (static_cast<VoltageSource *>(componentes[count])->getPhase());
+
+			value = modulo*cos(fase*(PI / G_180)) +  I*modulo*sin(fase*(PI / G_180));
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
 			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(0)] -= 1;
@@ -712,7 +732,7 @@ void Netlist::DoConductanceMatrixAC()
 			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][SistemaLinear.GetRows() + SistemaLinear.extraRows + 1] -= value;
 		}
 
-		else if (componentes[count]->getType() == 'O')
+		else if (componentes[count]->getType() == 'O') //funcionando
 		{
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
@@ -720,81 +740,64 @@ void Netlist::DoConductanceMatrixAC()
 			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= 1;
 		}
 
-		else if (componentes[count]->getType() == 'K')
+		else if (componentes[count]->getType() == 'K') //funcionando
 		{
-			value = (I*frequencyAux*PI2*(static_cast<Transformador*>(componentes[count])->getValueM())*sqrt(static_cast<Transformador*>(componentes[count])->getValueFirstIndutor()*static_cast<Transformador*>(componentes[count])->getValueSecondIndutor()));
+			value = (I*frequency*PI2*(static_cast<Transformador*>(componentes[count])->getValueM())*sqrt(static_cast<Transformador*>(componentes[count])->getValueFirstIndutor()*static_cast<Transformador*>(componentes[count])->getValueSecondIndutor()));
 			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)] += value;
 			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += value;
 		}
 
-		else if (componentes[count]->getType() == 'M')
+		else if (componentes[count]->getType() == 'M') //funcionando
 		{
+			double gmb = static_cast<Mosfet *>(componentes[count])->Gmb;
+			double gm = static_cast<Mosfet *>(componentes[count])->Gm;
+			double gds = static_cast<Mosfet *>(componentes[count])->Gds;
+			double cgd = static_cast<Mosfet*>(componentes[count])->CGD;
+			double cgs = static_cast<Mosfet*>(componentes[count])->CGS;
+			double cbg = static_cast<Mosfet*>(componentes[count])->CBG;
 
-			if (static_cast<Mosfet*>(componentes[count])->inverteu == false)
-			{
-				/*transcondutancia 1  */
-
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(3)] += static_cast<Mosfet*>(componentes[count])->Gmb;
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += static_cast<Mosfet*>(componentes[count])->Gmb;
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= static_cast<Mosfet*>(componentes[count])->Gmb;
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(3)] -= static_cast<Mosfet*>(componentes[count])->Gmb;
-
-				/*transcondutancia 2  */
-
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(1)] += static_cast<Mosfet*>(componentes[count])->Gm;
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += static_cast<Mosfet*>(componentes[count])->Gm;
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= static_cast<Mosfet*>(componentes[count])->Gm;
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(1)] -= static_cast<Mosfet*>(componentes[count])->Gm;
-			}
-
-			else
-			{
-				/*transcondutancia 1  */
-
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += static_cast<Mosfet*>(componentes[count])->Gmb;
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(3)] += static_cast<Mosfet*>(componentes[count])->Gmb;
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(3)] -= static_cast<Mosfet*>(componentes[count])->Gmb;
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= static_cast<Mosfet*>(componentes[count])->Gmb;
-
-				/*transcondutancia 2  */
-
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += static_cast<Mosfet*>(componentes[count])->Gm;
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(1)] += static_cast<Mosfet*>(componentes[count])->Gm;
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(1)] -= static_cast<Mosfet*>(componentes[count])->Gm;
-				SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= static_cast<Mosfet*>(componentes[count])->Gm;
-			}
+			//cout << "Gmb :" << gmb << " " << "Gm :" << gm << " " << "Gds :" << gds << " " << "Cgd :" << cgd << " " << "Cgs :" << cgs << " " << "Cbg :" << cbg << endl;
+			//Gmb transconductance
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(3)] += gmb;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += gmb;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= gmb;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(3)] -= gmb;
+			//Gm transconductance
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(1)] += gm;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += gm;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= gm;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(1)] -= gm;
 
 			/*transcondutancia gds = condutancia apenas */
-
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += static_cast<Mosfet*>(componentes[count])->Gds;
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += static_cast<Mosfet*>(componentes[count])->Gds;
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= static_cast<Mosfet*>(componentes[count])->Gds;
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(0)] -= static_cast<Mosfet*>(componentes[count])->Gds;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += gds;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += gds;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= gds;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(0)] -= gds;
 
 			/*capacitancia 1 CGD */
-
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += I*PI2 * frequencyAux*static_cast<Mosfet*>(componentes[count])->CGD;
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += I*PI2 * frequencyAux*static_cast<Mosfet*>(componentes[count])->CGD;
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= I*PI2 * frequencyAux*static_cast<Mosfet*>(componentes[count])->CGD;
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= I*PI2 * frequencyAux*static_cast<Mosfet*>(componentes[count])->CGD;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += I*PI2 * frequency*cgd;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += I*PI2 * frequency*cgd;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= I*PI2 * frequency*cgd;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= I*PI2 * frequency*cgd;
 
 			/*capacitancia 2 CGS */
-
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += I*PI2 * frequencyAux*static_cast<Mosfet*>(componentes[count])->CGS;
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += I*PI2 * frequencyAux*static_cast<Mosfet*>(componentes[count])->CGS;
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(3)] -= I*PI2 * frequencyAux*static_cast<Mosfet*>(componentes[count])->CGS;
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(1)] -= I*PI2 * frequencyAux*static_cast<Mosfet*>(componentes[count])->CGS;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += I*PI2 * frequency*cgs;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += I*PI2 * frequency*cgs;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(3)] -= I*PI2 * frequency*cgs;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(1)] -= I*PI2 * frequency*cgs;
 
 			/*capacitancia 3 CBG */
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(3)][componentes[count]->getNode(3)] += I*PI2*frequencyAux*static_cast<Mosfet*>(componentes[count])->CBG;
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += I*PI2* frequencyAux*static_cast<Mosfet*>(componentes[count])->CBG;
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(3)] -= I*PI2* frequencyAux*static_cast<Mosfet*>(componentes[count])->CBG;
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(3)][componentes[count]->getNode(1)] -= I*PI2*frequencyAux*static_cast<Mosfet*>(componentes[count])->CBG;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(3)][componentes[count]->getNode(3)] += I*PI2*frequency*cbg;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += I*PI2* frequency*cbg;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(3)] -= I*PI2* frequency*cbg;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(3)][componentes[count]->getNode(1)] -= I*PI2*frequency*cbg;
 		}
+		//SistemaLinear.PrintG_MatrixAC();
+		//system("pause");
 	}
 }
 
-void Netlist::NewtonRaphson()
+int Netlist::NewtonRaphson()
 {
 	unsigned attempts = 0;
 	convergiu = false;
@@ -806,9 +809,11 @@ void Netlist::NewtonRaphson()
 		for (int i = 0; (i < 40 && !convergiu); i++)
 		{
 			DoConductanceMatrixDC();
+			//SistemaLinear.PrintG_Matrix();
 			SistemaLinear.SolveLinearSystem();
 			NewtonRaphsonError();
 			//NewtonRaphsonPrint();
+			//SistemaLinear.PrintG_Matrix();
 			if (fabs(SistemaLinear.maxError) < NR_TOLERANCE)
 			{
 				convergiu = true;
@@ -818,11 +823,18 @@ void Netlist::NewtonRaphson()
 		}
 		if (!convergiu) //randomize lastVariables
 		{
+			cout << "Nao convergiu: tentativa: " << attempts << endl;
 			attempts++;
 			NewtonRaphsonRandomizeVariables();
 		}
 
 	}
+	if (!convergiu)
+	{
+		cout << "Nao convergiu" << endl;
+		return 1;
+	}
+	return 0;
 }
 
 void Netlist::NewtonRaphsonError()
@@ -886,9 +898,9 @@ void Netlist::WriteDCData()
 	{
 		int i = 1;
 		for (; i < SistemaLinear.rows; i++)
-			dcFile  << "Tensao e" << i << " " ;
+			dcFile  << "e" << i << " " ;
 		for (; i < (SistemaLinear.rows + SistemaLinear.extraRows); i++)
-			dcFile  << "Corrente " << SistemaLinear.extraRowsName[i - SistemaLinear.rows] << " ";
+			dcFile  << SistemaLinear.extraRowsName[i - SistemaLinear.rows] << " ";
 		dcFile << endl;
 		i = 1;
 		for (; i < SistemaLinear.rows; i++)
@@ -909,7 +921,7 @@ void Netlist::WriteACData()
 	vector<string> currentName = SistemaLinear.extraRowsName;
 	newPath = path + "tab";
 	cout << newPath << endl;
-	ofstream acFile(newPath);
+	acFile.open(newPath);
 	if (acFile.is_open())
 	{
 		int i = 1;
@@ -921,9 +933,9 @@ void Netlist::WriteACData()
 		}	
 		for (; i < (SistemaLinear.rows + SistemaLinear.extraRows); i++)
 		{
-			currentName[i - SistemaLinear.rows].resize(2);
-			acFile << currentName[i - SistemaLinear.rows] << (i - SistemaLinear.rows + 1)<< "m" << " ";
-			acFile << currentName[i - SistemaLinear.rows] << (i - SistemaLinear.rows + 1) << "f" << " ";
+
+			acFile << currentName[i - SistemaLinear.rows] << "m" << " ";
+			acFile << currentName[i - SistemaLinear.rows] << "f" << " ";
 		}		
 		acFile << endl;
 
@@ -931,32 +943,34 @@ void Netlist::WriteACData()
 	else cout << "Unable to open file" << endl;
 
 }
-/*
+
 void Netlist::WriteACLine()
 {
 	if (acFile.is_open())
 	{
-		int i = 1;
-
-		for (; i < SistemaLinear.rows; i++)
-			acFile << SistemaLinear.variables[i] << " ";
-		for (; i < (SistemaLinear.rows + SistemaLinear.extraRows); i++)
-			acFile << SistemaLinear.variables[i] << " ";
+		acFile << frequency << " ";
+		for (int i = 1; i < (SistemaLinear.rows + SistemaLinear.extraRows); i++)
+		{
+			acFile << abs(SistemaLinear.variablesComp[i]) << " "; //modulo
+			acFile << arg(SistemaLinear.variablesComp[i]) * 180 / PI << " ";//fase
+		}
 		acFile << endl;
-
-		acFile.close();
 	}
 	else cout << "Unable to open file" << endl;
+}
+void Netlist::CloseACFile()
+{
+	acFile.close();
 
 }
-*/
-
 
 void Netlist::ACSweep()
 {
 	SistemaLinear.SaveDC();
 	SistemaLinear.InitializeG_MatrixAC();
 	double step;
+	if(!AC)
+		return;
 
 	if(ParametrosAC.points - 1) //para nao ter divisoes por 0 e travar o programa
 	{
@@ -990,24 +1004,27 @@ void Netlist::ACSweep()
 	}
 
 	frequency = ParametrosAC.startFrequency;
-	while (frequency <= ParametrosAC.endFrequency) {
-		DoConductanceMatrixAC();
-		if (SistemaLinear.SolveLinearSystemC()) {
+	WriteACData(); //inicia o arquivo
+	while (frequency <= ParametrosAC.endFrequency)// while inicio ate o final frequencia
+	{
+		DoConductanceMatrixAC(); //monta estampa AC
+		
+		if (SistemaLinear.SolveLinearSystemC()) //Resolve sistema
+		{
 			return;
 		}
-		//GravarLinha();
-		if (ParametrosAC.stepType == 'L') {
+		//SistemaLinear.PrintG_MatrixAC();
+		//system("pause");
+		WriteACLine(); //salva variaveis
+
+		if (ParametrosAC.stepType == 'L') //aumenta a frequencia
+		{
 			frequency += step;
 		}
-		else {
+		else 
+		{
 			frequency *= step;
 		}
 	}
-
-	// for inicio ate o final frequencia
-	//monta estampa AC
-	//Resolve sistema
-	//salva variaveis
-	//aumenta a frequencia
-
+	CloseACFile(); //fecha o arquivo
 }

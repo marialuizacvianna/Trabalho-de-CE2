@@ -8,12 +8,17 @@
 #include <sstream>
 #include <vector>
 #include <complex>
-#include <cmath>
 #include "Componente.h"
+
+#define  PI2 		(8 * atan(1))
+#define PI 			(4 * atan(1))
+#define I			dcomp(0.0, 1.0)
+#define G_180       180
 
 #define TOLG 1e-12
 
-typedef complex<double> dcomp;
+typedef std::complex<double> dcomp;
+
 using namespace std;
 
 class LinearSystem
@@ -33,6 +38,8 @@ class LinearSystem
 		void InitializeG_MatrixAC();
 		void ResetG_MatrixAC();
 		int SolveLinearSystemC();
+		void PrintG_MatrixAC();
+
 		vector<dcomp> variablesComp;
 
 		int extraRows;

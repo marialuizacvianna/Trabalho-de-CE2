@@ -33,13 +33,16 @@ public:
 	void checkNewNode(unsigned);
 	unsigned GetNumberOfNodes();
 	void PrintNodes();
-	void NewtonRaphson();
+	int NewtonRaphson();
 	void NewtonRaphsonError();
 	void NewtonRaphsonRandomizeVariables();
 	void NewtonRaphsonPrint();
 	void ACSweep();
 	void WriteDCData();
 	void WriteACData();
+	void WriteACLine();
+	void CloseACFile();
+
 	LinearSystem SistemaLinear;
 	ACParameters ParametrosAC;
 private:

@@ -6,7 +6,6 @@
 #include <sstream>
 #include <vector>
 #include <complex>
-#include <cmath>
 #include "Componente.h"
 
 using namespace std;
@@ -204,7 +203,24 @@ double Transformador:: getValueM()
 		VDS = VD - VS;
 		VGS = VG - VS;
 		VBS = VB - VS;
-		VT = Vt0 + gamma*(sqrt(phi - VBS) - sqrt(phi));
+
+		if (mosType == 'N')
+		{
+			if (VBS > phi / 2)
+				VBSaux = phi / 2;
+			else
+				VBSaux = VBS;
+		}
+		else
+		{
+			if ((-VBS) > phi / 2)
+				VBSaux = (-phi) / 2;
+			else
+				VBSaux = VBS;
+		}
+
+
+		VT = Vt0 + gamma*(sqrt(phi - VBSaux) - sqrt(phi));
 
 
 	}
@@ -302,5 +318,8 @@ double Transformador:: getValueM()
 		cout << " Cbg: " << CBG ;
 		cout << " VGS: " << VGS ;
 		cout << " VDS: " << VDS ;
-		cout << " ID: " << ID << endl;
+		cout << " ID: " << ID ;
+		cout << " VT: " << VT;
+		cout << " VBS: " << VBS;
+		cout << " VBSaux: " << VBSaux << endl;
 	}
