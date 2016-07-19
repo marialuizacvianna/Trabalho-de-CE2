@@ -5,7 +5,9 @@
 #include <iterator>
 #include <sstream>
 #include <vector>
+#include <cmath>
 #include "LinearSystem.h"
+#include "mna1gr1.h"
 using namespace std;
 
 
@@ -26,6 +28,7 @@ void LinearSystem::PrintG_Matrix()
 	for (int i = 0; i < (rows + extraRows); i++)
 	{
 		cout << "| ";
+
 		for (int j = 0; j < (rows + extraRows); j++)
 		{
 			cout << G_Matrix[i][j];
@@ -35,6 +38,7 @@ void LinearSystem::PrintG_Matrix()
 	}
 
 	cout << endl;
+
 }
 
 void LinearSystem::setRowsValue(vector <Componente *> componentes)
@@ -69,6 +73,12 @@ void LinearSystem::setRowsValue(vector <Componente *> componentes)
 
 	rows = sizeof(nosNaoRepetidos) ;
 }
+
+void LinearSystem::setRowsValue(unsigned value)
+{
+	rows = value ;
+}
+
 
 void LinearSystem::SolveLinearSystem()
 {

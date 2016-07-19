@@ -4,7 +4,8 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="mna1gr.exe"/>
-    <OBJFILES value="mna1gr.obj mna1gr1.obj"/>
+    <OBJFILES value="mna1gr.obj mna1gr1.obj Componente.obj LinearSystem.obj netlist.obj 
+      NetlistReadingProgram.obj"/>
     <RESFILES value="mna1gr.res"/>
     <IDLFILES value=""/>
     <DEFFILE value=""/>
@@ -33,7 +34,7 @@
   </MACROS>
   <OPTIONS>
     <CFLAG1 value="-O2 -H=c:\PROGRA~2\borland\CBUILD~1\lib\vcl35.csm -Hc -Vx -Ve -Tkh30000 
-      -X- -a8 -b- -k- -vi -c -tW -tWM"/>
+      -X- -a8 -b- -k- -y -v -vi -c -tW -tWM"/>
     <CFLAG2 value=""/>
     <CFLAG3 value=""/>
     <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -M -JPHNE"/>
@@ -53,6 +54,10 @@
       <FILE FILENAME="mna1gr.res" FORMNAME="" UNITNAME="mna1gr.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="mna1gr.cpp" FORMNAME="" UNITNAME="mna1gr" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="mna1gr1.cpp" FORMNAME="Form1" UNITNAME="mna1gr1" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Componente.cpp" FORMNAME="" UNITNAME="Componente.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="LinearSystem.cpp" FORMNAME="" UNITNAME="LinearSystem.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="netlist.cpp" FORMNAME="" UNITNAME="netlist.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="NetlistReadingProgram.cpp" FORMNAME="" UNITNAME="NetlistReadingProgram.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>

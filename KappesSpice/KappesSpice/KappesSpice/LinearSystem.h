@@ -1,3 +1,6 @@
+#ifndef LINEARSYSTEM_H
+#define LINEARSYSTEM_H
+
 #pragma once
 
 #include <fstream>
@@ -7,18 +10,21 @@
 #include <iterator>
 #include <sstream>
 #include <vector>
+#include <cmath>
 #include "Componente.h"
 
 #define NR_TOLERANCE    1e-3
 #define NR_ATTEMPTS  50
 #define NR_RELATIVE_ABSOLUTE_TRESHOLD 1e-6
+
+
 using namespace std;
 
 class LinearSystem
 {
 	public:
-		//void setRowsValue(vector <Componente *>);
-		void setRowsValue(unsigned numberOfNodes);
+		void setRowsValue(vector <Componente *>);
+	       	void setRowsValue(unsigned);
 		void InitializeG_Matrix(); 
 		void PrintG_Matrix();
 		void SolveLinearSystem(); //G_Matrix is almost a square Matrix, it's a A[i][i+1]. In the last column we hold the b for the Ax = b system. So we just need to define the number of rows.
@@ -42,3 +48,4 @@ class LinearSystem
 		bool convergiu;
 
 };
+#endif

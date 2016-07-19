@@ -5,6 +5,7 @@
 #include <iterator>
 #include <sstream>
 #include <vector>
+#include <math>
 #include "Componente.h"
 
 using namespace std;
@@ -213,7 +214,7 @@ double Transformador:: getValueM()
 
 	void Mosfet::setLinearParameters()
 	{
-		if (mosType = 'N')
+		if (mosType == 'N')
 		{
 			if (VBS > phi / 2)
 				VBSaux = phi / 2;

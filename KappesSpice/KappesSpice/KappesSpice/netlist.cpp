@@ -5,15 +5,20 @@
 #include <iterator>
 #include <sstream>
 #include <vector>
+#include <map>
+#include <vcl.h>
+#include <string.h>
 #include "LinearSystem.h"
 #include "Componente.h"
+#include "mna1gr1.h"
 #include "Netlist.h"
+#pragma package(smart_init)
+#pragma hdrstop
 
-
+#define SIZE_TEXTO_IMPRIMIR_GUI 100000
 #define DC_RESISTANCE_C  1e9
 
 using namespace std;
-
 
 void auxInitializeNumberOfNodes(Componente *componente){
 	componente->initializeNumberOfNodes();
@@ -21,23 +26,27 @@ void auxInitializeNumberOfNodes(Componente *componente){
 
 Netlist::Netlist(string netlistPath)
 {
+	memset(&textoParaImprimirNaGUI[0], 0, sizeof(textoParaImprimirNaGUI));
+	textoParaImprimirNaGUI = new char [SIZE_TEXTO_IMPRIMIR_GUI];
 	string linha;
 	ifstream netlistFile;
 	unsigned index = 0;
-   
 	SistemaLinear.extraRows = 0;
-
-	netlistFile.open(netlistPath);
+        //c_str() converts to const char *
+	netlistFile.open(netlistPath.c_str());
 	if (!netlistFile)
 	{
-		cout << "Nao foi possivel abrir o arquivo" << endl;
+		//cout << "Nao foi possivel abrir o arquivo" << endl;
+		strcat(textoParaImprimirNaGUI, "Nao foi possivel abrir o arquivo\n");
 	}
-	cout << "Lendo Netlist : " << netlistPath << endl;
+	//cout << "Lendo Netlist : " << netlistPath << endl;
+	strcat(textoParaImprimirNaGUI, "Lendo Netlist : ");
 	getline(netlistFile, linha);
 	while (getline(netlistFile, linha))
 	{
 		netlist.push_back(linha);
-		cout << linha << endl;
+//		cout << linha << endl;
+		strcat(textoParaImprimirNaGUI, linha.c_str());
 		stringstream auxiliar(linha);   //initializing stringstream
 		vector <string> lineParameters; // array that will hold the each parameter in the netlist line
 		string campo;                   //auxiliar variable
@@ -379,12 +388,24 @@ unsigned Netlist::GetNumberOfNodes()
 }
 void Netlist::PrintNodes()
 {
-	for (unsigned i = 0; i < netlistNodes.size(); i++)
-		cout << netlistNodes[i] << endl;
-	
+        unsigned buffer = 0;
+        const char * bufferchar;
+	for (unsigned i = 0; i < netlistNodes.size(); i++) {
+		//cout << netlistNodes[i] << endl;
+                stringstream temp_str;
+                temp_str<<(netlistNodes[i]);
+                std::string str = temp_str.str();
+                const char* cstr2 = str.c_str();
+		strcat(textoParaImprimirNaGUI, cstr2);
+	}
 }
 
-
+string Netlist::getTextoParaImprimirNaGui(){
+	char *bufferTexto = new char [SIZE_TEXTO_IMPRIMIR_GUI];
+	strncpy(bufferTexto, &textoParaImprimirNaGUI[0], strlen(textoParaImprimirNaGUI));
+	memset(&textoParaImprimirNaGUI[0], 0, sizeof(textoParaImprimirNaGUI));
+	return string(bufferTexto);
+}
 
 void Netlist::DoConductanceMatrixDC()
 {
@@ -670,14 +691,24 @@ void Netlist::DoConductanceMatrixAC()
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += 1;
 			SistemaLinear.G_Matrix[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(3)] -= 1;
 		}
-
 		// M
-
 	}
-
 
 }
 
+unsigned int Netlist::stoul(string str ) {
+	char *ptr;
+	return strtoul(str.c_str(), &ptr, 10);
+}
 
+double Netlist::stod(string str) {
+	char *ptr;
+	return strtod(str.c_str(), &ptr);
+}
+
+float Netlist::stof(string str) {
+        char *ptr;
+	return (float) strtod(str.c_str(), &ptr);
+}
 
 

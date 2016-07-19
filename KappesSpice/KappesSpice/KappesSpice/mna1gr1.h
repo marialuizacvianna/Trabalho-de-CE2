@@ -18,15 +18,16 @@ __published:	// IDE-managed Components
         TMainMenu *MainMenu1;
         TMenuItem *Arquivo1;
         TMenuItem *Abrir1;
-        TMenuItem *Opes1;
-        TMenuItem *Mostrarestampas1;
+//        TMenuItem *Mostrarestampas1;
         void __fastcall Abrir1Click(TObject *Sender);
         void __fastcall FormCreate(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TForm1(TComponent* Owner);
+    static void impressoraHP(char*);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TForm1 *Form1;
 //---------------------------------------------------------------------------
 #endif
+
