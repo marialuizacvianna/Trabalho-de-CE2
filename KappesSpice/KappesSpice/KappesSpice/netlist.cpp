@@ -16,7 +16,8 @@
 
 #define WRITE_WIDTH  15
 #define DC_RESISTANCE_C  1e9
-
+#define DEBUG_AC 0
+#define DEBUG_AC_MOSFET 0
 using namespace std;
 
 
@@ -382,14 +383,14 @@ Netlist::Netlist(string netlistPath)
 			for (int i = 1; i < 5; i++)
 				checkNewNode(stoul(lineParameters[i]));
 			(m->mosType) = (lineParameters[5].at(0));
-			(m->comprimento) = stof(lineParameters[6].substr(2)); //we need to remove 'L='
-			(m->largura) = stof(lineParameters[7].substr(2));//we need to remove 'W='
-			(m->k) = stof(lineParameters[8]);
-			(m->Vt0) = stof(lineParameters[9]);
-			(m->lambda) = stof(lineParameters[10]);
-			(m->gamma) = stof(lineParameters[11]);
-			(m->phi) = stof(lineParameters[12]);
-			(m->Ld) = stof(lineParameters[13]);
+			(m->comprimento) = stod(lineParameters[6].substr(2)); //we need to remove 'L='
+			(m->largura) = stod(lineParameters[7].substr(2));//we need to remove 'W='
+			(m->k) = stod(lineParameters[8]);
+			(m->Vt0) = stod(lineParameters[9]);
+			(m->lambda) = stod(lineParameters[10]);
+			(m->gamma) = stod(lineParameters[11]);
+			(m->phi) = stod(lineParameters[12]);
+			(m->Ld) = stod(lineParameters[13]);
 			(m->inverteu) = false;
 			componentes.push_back(m);
 		}
@@ -722,6 +723,7 @@ void Netlist::DoConductanceMatrixAC()
 
 		else if (componentes[count]->getType() == 'V') //funcionando
 		{
+
 			double modulo = (static_cast<VoltageSource *>(componentes[count])->getValue());
 			double fase = (static_cast<VoltageSource *>(componentes[count])->getPhase());
 
@@ -735,6 +737,7 @@ void Netlist::DoConductanceMatrixAC()
 
 		else if (componentes[count]->getType() == 'O') //funcionando
 		{
+
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] += 1;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)] -= 1;
 			SistemaLinear.G_MatrixAC[SistemaLinear.GetRows() + componentes[count]->GetExtraPosition(0)][componentes[count]->getNode(2)] += 1;
@@ -758,16 +761,33 @@ void Netlist::DoConductanceMatrixAC()
 			double cbg = static_cast<Mosfet*>(componentes[count])->CBG;
 
 			//cout << "Gmb :" << gmb << " " << "Gm :" << gm << " " << "Gds :" << gds << " " << "Cgd :" << cgd << " " << "Cgs :" << cgs << " " << "Cbg :" << cbg << endl;
+			
 			//Gmb transconductance
+			
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(3)] += gmb;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += gmb;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= gmb;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(3)] -= gmb;
+			
+#if DEBUG_AC_MOSFET
+			cout << "Estampa apos " << componentes[count]->getType() << componentes[count]->getName() << " (f=" << frequency << ")" << ": " << endl;
+			cout << "Gmb :" << gmb << endl;
+			SistemaLinear.PrintG_MatrixAC();
+			system("pause");
+#endif
+
 			//Gm transconductance
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(1)] += gm;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += gm;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= gm;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(1)] -= gm;
+
+#if DEBUG_AC_MOSFET
+			cout << "Estampa apos " << componentes[count]->getType() << componentes[count]->getName() << " (f=" << frequency << ")" << ": " << endl;
+			cout << "Gm :" << gm << endl;
+			SistemaLinear.PrintG_MatrixAC();
+			system("pause");
+#endif
 
 			/*transcondutancia gds = condutancia apenas */
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += gds;
@@ -775,26 +795,56 @@ void Netlist::DoConductanceMatrixAC()
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(2)] -= gds;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(0)] -= gds;
 
+#if DEBUG_AC_MOSFET
+			cout << "Estampa apos " << componentes[count]->getType() << componentes[count]->getName() << " (f=" << frequency << ")" << ": " << endl;
+			cout << "Gds :" << gds << endl;
+			SistemaLinear.PrintG_MatrixAC();
+			system("pause");
+#endif
+
 			/*capacitancia 1 CGD */
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(0)] += I*PI2 * frequency*cgd;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += I*PI2 * frequency*cgd;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(0)][componentes[count]->getNode(1)] -= I*PI2 * frequency*cgd;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(0)] -= I*PI2 * frequency*cgd;
 
+#if DEBUG_AC_MOSFET
+			cout << "Estampa apos " << componentes[count]->getType() << componentes[count]->getName() << " (f=" << frequency << ")" << ": " << endl;
+			cout << "CGD :" << cgd << endl;
+			SistemaLinear.PrintG_MatrixAC();
+			system("pause");
+#endif
+
 			/*capacitancia 2 CGS */
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += I*PI2 * frequency*cgs;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(2)] += I*PI2 * frequency*cgs;
-			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(3)] -= I*PI2 * frequency*cgs;
+			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(2)] -= I*PI2 * frequency*cgs;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(2)][componentes[count]->getNode(1)] -= I*PI2 * frequency*cgs;
-
+#if DEBUG_AC_MOSFET
+			cout << "Estampa apos " << componentes[count]->getType() << componentes[count]->getName() << " (f=" << frequency << ")" << ": " << endl;
+			cout << "CGS :" << cgs << endl;
+			SistemaLinear.PrintG_MatrixAC();
+			system("pause");
+#endif
 			/*capacitancia 3 CBG */
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(3)][componentes[count]->getNode(3)] += I*PI2*frequency*cbg;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(1)] += I*PI2* frequency*cbg;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(1)][componentes[count]->getNode(3)] -= I*PI2* frequency*cbg;
 			SistemaLinear.G_MatrixAC[componentes[count]->getNode(3)][componentes[count]->getNode(1)] -= I*PI2*frequency*cbg;
+#if DEBUG_AC_MOSFET
+			cout << "Estampa apos " << componentes[count]->getType() << componentes[count]->getName() << " (f=" << frequency << ")" << ": " << endl;
+			cout << "CBG :" << cbg << endl;
+			SistemaLinear.PrintG_MatrixAC();
+			system("pause");
+#endif
 		}
-		//SistemaLinear.PrintG_MatrixAC();
-		//system("pause");
+
+#if DEBUG_AC
+		cout << "Estampa apos " << componentes[count]->getType() << componentes[count]->getName() << " (f=" << frequency <<")" <<": " << endl;
+		SistemaLinear.PrintG_MatrixAC();
+		system("pause");
+#endif
+		
 	}
 }
 
@@ -807,7 +857,7 @@ int Netlist::NewtonRaphson()
 	while (attempts < NR_ATTEMPTS && !convergiu)
 	{
 		//NewtonRaphsonPrint();
-		for (int i = 0; (i < 100 && !convergiu); i++)
+		for (int i = 0; (i < 250 && !convergiu); i++)
 		{
 			DoConductanceMatrixDC();
 			//SistemaLinear.PrintG_Matrix();
@@ -817,6 +867,7 @@ int Netlist::NewtonRaphson()
 			//SistemaLinear.PrintG_Matrix();
 			if (fabs(SistemaLinear.maxError) < NR_TOLERANCE)
 			{
+
 				convergiu = true;
 			}
 			SistemaLinear.lastVariables = SistemaLinear.variables;
@@ -837,7 +888,15 @@ int Netlist::NewtonRaphson()
 	}
 	return 0;
 }
-
+void Netlist::PrintMosfetParameters()
+{
+	cout << "PARAMETROS MOSFET: " << endl;
+	for (unsigned count = 0; count < componentes.size(); count++)
+		if (componentes[count]->getType() == 'M')
+			static_cast<Mosfet *>(componentes[count])->printConditions();
+	
+	cout << endl;
+}
 void Netlist::NewtonRaphsonError()
 {
 	SistemaLinear.maxError = 0;
@@ -1010,13 +1069,12 @@ void Netlist::ACSweep()
 	while (frequency <= ParametrosAC.endFrequency)// while inicio ate o final frequencia
 	{
 		DoConductanceMatrixAC(); //monta estampa AC
-		
+
 		if (SistemaLinear.SolveLinearSystemC()) //Resolve sistema
 		{
 			return;
 		}
-		//SistemaLinear.PrintG_MatrixAC();
-		//system("pause");
+		
 		WriteACLine(); //salva variaveis
 
 		if (ParametrosAC.stepType == 'L') //aumenta a frequencia

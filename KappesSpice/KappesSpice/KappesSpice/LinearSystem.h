@@ -10,12 +10,12 @@
 #include <complex>
 #include "Componente.h"
 
-#define  PI2 		(8 * atan(1))
-#define PI 			(4 * atan(1))
+#define  PI2 		(8 * atan(1.0))
+#define PI 			(4 * atan(1.0))
 #define I			dcomp(0.0, 1.0)
 #define G_180       180
 
-#define TOLG 1e-12
+#define TOLG 1e-16
 
 typedef std::complex<double> dcomp;
 

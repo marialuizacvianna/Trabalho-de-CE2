@@ -117,7 +117,7 @@ public:
 	void printConditions();
 	char mosType;
 
-	float comprimento,
+	double comprimento,
 		  largura,
 		  k,
 		  Vt0,

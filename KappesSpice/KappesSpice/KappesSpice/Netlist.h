@@ -10,7 +10,7 @@
 #include "LinearSystem.h"
 
 #define NR_TOLERANCE    1e-3
-#define NR_ATTEMPTS  50
+#define NR_ATTEMPTS  100
 #define NR_RELATIVE_ABSOLUTE_TRESHOLD 1e-6
 
 using namespace std;
@@ -42,7 +42,7 @@ public:
 	void WriteACData();
 	void WriteACLine();
 	void CloseACFile();
-
+	void PrintMosfetParameters();
 	LinearSystem SistemaLinear;
 	ACParameters ParametrosAC;
 private:
